@@ -1,10 +1,11 @@
 #include "ocr_infer/core/node_core/detect_core.h"
 
+#include "glog/logging.h"
+
 DetectCore::DetectCore(const std::unordered_map<std::string, std::string> &config) {
-  std::cout << "*** Detect core ***\n";
+  LOG(INFO) << "Detect node init over!";
 }
 
 std::shared_ptr<DetOutput> DetectCore::Process(const std::shared_ptr<DetInput> &in) {
-  std::cout << "=== Detect core process ===\n";
   return {};
 }

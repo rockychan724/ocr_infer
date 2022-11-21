@@ -11,4 +11,5 @@ target_link_libraries(
   main
   -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lopencv_imgproc
   -ltbb
+  -lglog
 )

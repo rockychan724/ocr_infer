@@ -16,8 +16,8 @@ class NodeBase {
   //     : in_queue_(in_queue), out_queue_(out_queue) {}
 
   void SetUp(const std::unordered_map<std::string, std::string> &config,
-              const std::shared_ptr<QueueReceiver<IType>> &in_queue,
-              const std::shared_ptr<QueueSender<OType>> &out_queue, const std::string &node_name) {
+             const std::shared_ptr<QueueReceiver<IType>> &in_queue,
+             const std::shared_ptr<QueueSender<OType>> &out_queue, const std::string &node_name) {
     in_queue_ = in_queue;
     out_queue_ = out_queue;
     node_name_ = node_name;
@@ -39,10 +39,10 @@ class NodeBase {
 template <typename IType, typename OType, typename CType>
 class Node : public NodeBase<IType, OType> {
  protected:
-  std::shared_ptr<CoreBase<IType, OType>> core_;
+  std::unique_ptr<CoreBase<IType, OType>> core_;
 
   void InitCore(const std::unordered_map<std::string, std::string> &config) override {
-    core_ = std::make_shared<CType>(config);
+    core_ = std::make_unique<CType>(config);
   }
 
   void Run() override {
@@ -57,10 +57,10 @@ class Node : public NodeBase<IType, OType> {
 template <typename IType, typename OType, typename CType>
 class Buffer : public NodeBase<IType, OType> {
  protected:
-  std::shared_ptr<BufferCoreBase<IType, OType>> core_;
+  std::unique_ptr<BufferCoreBase<IType, OType>> core_;
 
   void InitCore(const std::unordered_map<std::string, std::string> &config) override {
-    core_ = std::make_shared<CType>(config);
+    core_ = std::make_unique<CType>(config);
   }
 
   void Run() override {
