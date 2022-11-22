@@ -12,10 +12,9 @@ class DetectCore : public NodeCoreBase<DetInput, DetOutput> {
   std::shared_ptr<DetOutput> Process(const std::shared_ptr<DetInput> &in) override;
 
  private:
-  int detector_num;
-  int model_batch_size;
-  std::vector<std::shared_ptr<Db>> detector;
-  cv::Size img_size;
+  int detector_num_;
+  std::vector<std::unique_ptr<Db>> detector_;
+  cv::Size img_size_;
 };
 
 #endif  // OCR_INFER_CORE_NODE_CORE_DETECT_CORE_H_

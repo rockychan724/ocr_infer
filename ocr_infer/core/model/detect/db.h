@@ -6,7 +6,6 @@
 
 #include "NvInferRuntime.h"
 #include "NvInferRuntimeCommon.h"
-#include "ocr_infer/core/model/model_base.h"
 #include "opencv2/opencv.hpp"
 
 class DetTrtLogger : public nvinfer1::ILogger {
