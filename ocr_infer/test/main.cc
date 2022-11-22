@@ -2,6 +2,7 @@
 #include <unistd.h>
 
 #include <iostream>
+#include <unordered_map>
 
 #include "glog/logging.h"
 #include "ocr_infer/test/test_speed.h"
@@ -20,7 +21,6 @@ int main(int argc, char** argv) {
     }
   }
 
-  int a = 10;
   LOG(INFO) << "run";
 
   TestSpeed test("", 0);

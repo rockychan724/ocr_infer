@@ -4,7 +4,7 @@
 #include "ocr_infer/core/common/data_structure.h"
 #include "ocr_infer/core/node_core/core_base.h"
 
-class ClipCore : public CoreBase<DetBox, RecInput> {
+class ClipCore : public NodeCoreBase<DetBox, RecInput> {
  public:
   ClipCore(const std::unordered_map<std::string, std::string> &config);
 

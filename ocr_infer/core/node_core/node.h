@@ -36,10 +36,11 @@ class NodeBase {
   virtual void Run() = 0;
 };
 
+// TODO: opencv 库中也有一个 Node 类型，因此在使用 opencv 库时尽量加 cv:: 来引用
 template <typename IType, typename OType, typename CType>
 class Node : public NodeBase<IType, OType> {
  protected:
-  std::unique_ptr<CoreBase<IType, OType>> core_;
+  std::unique_ptr<NodeCoreBase<IType, OType>> core_;
 
   void InitCore(const std::unordered_map<std::string, std::string> &config) override {
     core_ = std::make_unique<CType>(config);

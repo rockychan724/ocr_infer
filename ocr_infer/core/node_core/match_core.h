@@ -4,7 +4,7 @@
 #include "ocr_infer/core/common/data_structure.h"
 #include "ocr_infer/core/node_core/core_base.h"
 
-class MatchCore : public CoreBase<RecOutput, MatchOutput> {
+class MatchCore : public NodeCoreBase<RecOutput, MatchOutput> {
  public:
   MatchCore(const std::unordered_map<std::string, std::string> &config);
 
