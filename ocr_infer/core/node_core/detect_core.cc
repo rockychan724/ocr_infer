@@ -9,15 +9,15 @@ DetectCore::DetectCore(const std::unordered_map<std::string, std::string> &confi
   LOG(INFO) << "Detect node init...";
 
   detector_num_ = std::stoi(Inquire(config, "detector_num"));
-  int model_batch_size = std::stoi(Inquire(config, "detect_batch_size"));
-  LOG(INFO) << "detector_ = " << detector_num_ << ", model_batch_size = " << model_batch_size;
+  int det_batch_size = std::stoi(Inquire(config, "detect_batch_size"));
+  LOG(INFO) << "detector_ = " << detector_num_ << ", det_batch_size = " << det_batch_size;
 
   // TODO: to be more intelligent
   std::string model_path =
       "/home/chenlei/Documents/cnc/configuration/cnc_data/engines/2022/db_resnet_50.fp16";
   detector_.resize(detector_num_);
   for (int i = 0; i < detector_num_; i++) {
-    detector_[i] = std::make_unique<Db>(model_path, model_batch_size);
+    detector_[i] = std::make_unique<Db>(model_path, det_batch_size);
   }
 
   LOG(INFO) << "Detect node init over!";

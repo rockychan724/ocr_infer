@@ -7,6 +7,7 @@
 
 #include "opencv2/opencv.hpp"
 
+// TODO: 使用指针存储数据
 struct DetInput {
   std::vector<std::string> names;
   std::vector<cv::Mat> images;

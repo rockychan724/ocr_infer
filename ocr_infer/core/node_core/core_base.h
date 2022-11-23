@@ -31,7 +31,7 @@ template <typename IType, typename OType>
 class BufferCoreBase : public CoreBase<IType, OType> {
  public:
   virtual void Process(const std::shared_ptr<IType> &in,
-                       std::vector<std::shared_ptr<OType>> *out) = 0;
+                       std::vector<std::shared_ptr<OType>> *out_v) = 0;
 };
 
 #endif  // OCR_INFER_CORE_NODE_CORE_NODE_CORE_H_

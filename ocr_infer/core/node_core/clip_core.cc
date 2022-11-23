@@ -4,6 +4,7 @@
 
 ClipCore::ClipCore(const std::unordered_map<std::string, std::string> &config)
     : rec_input_size_(480, 48) {
+  LOG(INFO) << "Clip node init...";
   LOG(INFO) << "Clip node init over!";
 }
 
