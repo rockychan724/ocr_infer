@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <iostream>
 
-#include "ocr_infer/core/util/clipper.hpp"
+#include "ocr_infer/core/util/third_party/clipper.hpp"
 #include "opencv2/imgproc.hpp"
 
 void DbPostprocessing::Parse(const cv::Mat &pred_map, const cv::Point2f &scales,

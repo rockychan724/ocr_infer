@@ -21,11 +21,11 @@ std::shared_ptr<DetBox> DetectPostProcessingCore::Process(const std::shared_ptr<
     std::vector<cv::RotatedRect> results;
     det_pp_->Parse(in->results[i], in->scales[i], &results);
     out->boxes.emplace_back(results);
-    VLOG(1) << "box size = " << results.size();
+    VLOG(1) << "box num = " << results.size();
   }
   out->names.assign(in->names.begin(), in->names.end());
   out->images.assign(in->images.begin(), in->images.end());
 
-  VLOG(1) << "*** Detect postprocessing node, out size = " << in->images.size();
+  VLOG(1) << "*** Detect postprocessing node, out size = " << out->images.size();
   return out;
 }

@@ -5,7 +5,7 @@
 #include "glog/logging.h"
 
 DetectCore::DetectCore(const std::unordered_map<std::string, std::string> &config)
-    : img_size_(512, 512) {
+    : det_input_size_(512, 512) {
   LOG(INFO) << "Detect node init...";
 
   detector_num_ = std::stoi(Inquire(config, "detector_num"));
@@ -35,11 +35,11 @@ std::shared_ptr<DetOutput> DetectCore::Process(const std::shared_ptr<DetInput> &
   for (cv::Mat &p : in->images) {
     out->images.emplace_back(p);
     out->scales.emplace_back(
-        cv::Point2f((float)(img_size_.width) / p.cols, (float)(img_size_.height) / p.rows));
+        cv::Point2f((float)(det_input_size_.width) / p.cols, (float)(det_input_size_.height) / p.rows));
     if (p.depth() != CV_32FC3) {
       p.convertTo(p, CV_32FC3);
     }
-    cv::resize(p, p, img_size_, 0, 0, cv::INTER_CUBIC);
+    cv::resize(p, p, det_input_size_, 0, 0, cv::INTER_CUBIC);
   }
   out->names.assign(in->names.begin(), in->names.end());
 
@@ -65,6 +65,6 @@ std::shared_ptr<DetOutput> DetectCore::Process(const std::shared_ptr<DetInput> &
     }
   }
 
-  VLOG(1) << "*** Detect node, out size = " << in->images.size();
+  VLOG(1) << "*** Detect node, out size = " << out->images.size();
   return out;
 }

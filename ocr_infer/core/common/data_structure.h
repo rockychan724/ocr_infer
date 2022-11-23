@@ -28,14 +28,14 @@ struct DetBox {
 struct RecInput {
   std::vector<std::string> names;
   std::vector<cv::Mat> clips;
-  std::vector<int> clip_num;
+  std::vector<int> box_num;
   std::vector<cv::RotatedRect> boxes;
 };
 
 struct RecOutput {
   std::vector<std::string> names;
   std::vector<std::string> text;
-  std::vector<int> clip_num;
+  std::vector<int> box_num;
   std::vector<cv::RotatedRect> boxes;
 };
 

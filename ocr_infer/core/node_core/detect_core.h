@@ -14,7 +14,7 @@ class DetectCore : public NodeCoreBase<DetInput, DetOutput> {
  private:
   int detector_num_;
   std::vector<std::unique_ptr<Db>> detector_;
-  cv::Size img_size_;
+  cv::Size det_input_size_;
 };
 
 #endif  // OCR_INFER_CORE_NODE_CORE_DETECT_CORE_H_
