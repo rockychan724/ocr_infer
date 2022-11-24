@@ -32,8 +32,9 @@ std::shared_ptr<DetOutput> DetectCore::Process(const std::shared_ptr<DetInput> &
 
   auto out = std::make_shared<DetOutput>();
 
-  for (cv::Mat &p : in->images) {
-    out->images.emplace_back(p);
+  out->names.assign(in->names.begin(), in->names.end());
+  out->images.assign(in->images.begin(), in->images.end());
+  for (cv::Mat &p : in->images) {  // 改变 in->images 的值
     out->scales.emplace_back(
         cv::Point2f((float)(det_input_size_.width) / p.cols, (float)(det_input_size_.height) / p.rows));
     if (p.depth() != CV_32FC3) {
@@ -41,12 +42,11 @@ std::shared_ptr<DetOutput> DetectCore::Process(const std::shared_ptr<DetInput> &
     }
     cv::resize(p, p, det_input_size_, 0, 0, cv::INTER_CUBIC);
   }
-  out->names.assign(in->names.begin(), in->names.end());
 
   // TODO: to optimize
-  std::vector<std::shared_ptr<std::thread>> threads;
+  std::vector<std::unique_ptr<std::thread>> threads;
   // 检测的batch_size最好是detector_num的整数倍，也最好是单个检测器的batch的整数倍
-  int one_batch = in->names.size() / detector_num_;  // TODO: 考虑 one_batch 为 0 的情况
+  int one_batch = in->images.size() / detector_num_;  // TODO: 考虑 one_batch 为 0 的情况
   std::vector<std::vector<cv::Mat>> output_result;
   output_result.resize(detector_num_);
   for (int i = 0; i < detector_num_; i++) {
@@ -54,7 +54,7 @@ std::shared_ptr<DetOutput> DetectCore::Process(const std::shared_ptr<DetInput> &
                                  in->images.begin() + (i + 1) * one_batch);
     // 注意：由于 i 和 sub_mat 是 for 循环里的局部变量，出了作用于就没了，因此在多线程的 lambda
     // 表达式中不能以引用的形式传递 可以值传递或者添加参数来传递
-    threads.emplace_back(std::make_shared<std::thread>([this, &output_result, i, sub_mat]() {
+    threads.emplace_back(std::make_unique<std::thread>([this, &output_result, i, sub_mat]() {
       this->detector_[i]->Forward(sub_mat, &output_result[i]);
     }));
   }

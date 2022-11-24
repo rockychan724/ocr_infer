@@ -38,7 +38,7 @@ class TestSpeed {
     double tick_fake_start = Timer::GetMillisecond();
     double tick_start, tick_end;
     // int period = 10000;
-    int start_point = 1000, end_point = 5000, test_num = 7000;
+    int start_point = 5000, end_point = 10000, test_num = 10000;
     while (1) {
       auto input = std::make_shared<DetInput>();
       for (int j = 0; j < detect_batch_size_; j++) {
