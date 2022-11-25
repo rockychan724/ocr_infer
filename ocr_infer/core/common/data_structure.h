@@ -7,7 +7,11 @@
 
 #include "opencv2/opencv.hpp"
 
-// TODO: 使用指针存储数据
+typedef int KeywordId;
+
+// TODO: 
+// 1. 使用指针存储数据
+// 2. 添加 id 属性（现在暂时把 name 当成 id）
 struct DetInput {
   std::vector<std::string> names;
   std::vector<cv::Mat> images;
@@ -41,10 +45,10 @@ struct RecOutput {
 };
 
 struct MatchOutput {
-  std::unordered_map<std::string, int> name2clip_num;
-  std::unordered_map<std::string, std::vector<std::string>> name2rec_result;
-  std::unordered_map<std::string, long long> name2hitid;
+  std::unordered_map<std::string, int> name2box_num;
+  std::unordered_map<std::string, std::vector<std::string>> name2text;
   std::unordered_map<std::string, std::vector<cv::RotatedRect>> name2boxes;
+  std::unordered_map<std::string, KeywordId> name2hitid;
 };
 
 #endif  // OCR_INFER_CORE_COMMON_DATA_STRUCTURE_H_

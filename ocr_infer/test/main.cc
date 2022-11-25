@@ -7,6 +7,8 @@
 #include "glog/logging.h"
 #include "ocr_infer/test/test_speed.h"
 
+// TODO:
+// 1. 程序异常检测
 int main(int argc, char** argv) {
   google::InitGoogleLogging(argv[0]);
   std::string log_dir = "log";
