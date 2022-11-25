@@ -7,8 +7,11 @@
 #include <cstring>
 #include <sstream>
 
-std::vector<std::string> GetFilesV1(const std::string &dir, const std::string &extension,
+std::vector<std::string> GetFilesV1(std::string dir, const std::string &extension,
                                     bool is_recursive, bool with_path) {
+  if (dir.back() != '/') {
+    dir += "/";
+  }
   std::vector<std::string> filenames;
   DIR *pDIR;
   struct dirent *entry;
@@ -43,9 +46,9 @@ std::vector<std::string> GetFilesV1(const std::string &dir, const std::string &e
 
       if (isMatch) {
         if (with_path)
-          filenames.push_back(dir + filename);
+          filenames.emplace_back(dir + filename);
         else
-          filenames.push_back(filename);
+          filenames.emplace_back(filename);
       }
     }
     closedir(pDIR);
@@ -60,7 +63,12 @@ std::vector<std::string> GetFilesV1(const std::string &dir, const std::string &e
  * @param pattern "/some/path/keyword_*.txt"
  * @return std::vector<std::string>
  */
-std::vector<std::string> GetFilesV2(const std::string &pattern) {
+std::vector<std::string> GetFilesV2(std::string dir, const std::string &extension) {
+  if (dir.back() != '/') {
+    dir += "/";
+  }
+  std::string pattern = dir + "*." + extension;
+
   // glob struct resides on the stack
   glob_t glob_result;
   memset(&glob_result, 0, sizeof(glob_result));
