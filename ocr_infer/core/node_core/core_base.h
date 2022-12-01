@@ -12,9 +12,11 @@
 template <typename IType, typename OType>
 class CoreBase {
  protected:
-  // TODO: 更加智能，设置默认值（推荐值），若没有查询到，返回默认值，并输出 warning
-  static std::string Inquire(const std::unordered_map<std::string, std::string> &config,
-                             const std::string &key) {
+  // TODO: 更加智能，设置默认值（推荐值），若没有查询到，返回默认值，并输出
+  // warning
+  static std::string Inquire(
+      const std::unordered_map<std::string, std::string> &config,
+      const std::string &key) {
     auto it = config.find(key);
     CHECK(it != config.end()) << "Can't find \"" << key << "\" in config!";
     return it->second;

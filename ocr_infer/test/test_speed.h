@@ -12,8 +12,9 @@ class TestSpeed {
  public:
   TestSpeed(const std::string &, int) {
     std::unordered_map<std::string, std::string> config;
-    if (!read_config("/home/chenlei/Documents/cnc/ocr_infer/ocr_infer/test/config_cnc.ini", config,
-                     "configuration")) {
+    if (!read_config("/home/chenlei/Documents/cnc/ocr_infer/ocr_infer/test/"
+                     "config_cnc.ini",
+                     config, "configuration")) {
       printf("read config.ini failed\n");
       exit(1);
     }
@@ -33,7 +34,8 @@ class TestSpeed {
   void Run() {
     std::vector<cv::Mat> images;
     std::vector<std::string> names;
-    size_t count = ReadImages("/home/chenlei/Documents/cnc/testdata/image", images, names);
+    size_t count =
+        ReadImages("/home/chenlei/Documents/cnc/testdata/image", images, names);
     int id = 0;
     double tick_fake_start = Timer::GetMillisecond();
     double tick_start, tick_end;
@@ -64,12 +66,15 @@ class TestSpeed {
         double average_time = diff / (id - start_point);
         double fps = 1.0e3 / average_time;
         printf(
-            "\nTest frames = %d\nTotal time = %lf s\nAverage time per image = %lf ms\nFPS = "
+            "\nTest frames = %d\nTotal time = %lf s\nAverage time per image = "
+            "%lf ms\nFPS = "
             "%lf\n\n",
             (id - start_point), diff / 1.0e3, average_time, fps);
         ofstream ofs("./speed.txt");
-        ofs << "Test frames = " << (id - start_point) << "\nTotal time = " << diff / 1.0e3
-            << " s\nAverage time per image = " << average_time << " ms\nFPS = " << fps << "\n";
+        ofs << "Test frames = " << (id - start_point)
+            << "\nTotal time = " << diff / 1.0e3
+            << " s\nAverage time per image = " << average_time
+            << " ms\nFPS = " << fps << "\n";
         ofs.close();
       } else if (id >= test_num) {
         break;

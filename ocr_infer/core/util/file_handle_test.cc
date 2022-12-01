@@ -6,7 +6,8 @@
 
 TEST(TestFileHandle, test_file_handle_0) {
   std::string dir_path =
-      "/home/chenlei/Documents/cnc/configuration/cnc_fuzzymatch_without_opencv/config/TexStar_data/"
+      "/home/chenlei/Documents/cnc/configuration/cnc_fuzzymatch_without_opencv/"
+      "config/TexStar_data/"
       "sensitive_oneWordoneFile/";
   auto res1 = GetFilesV1(dir_path, "txt", false, true);
   auto res2 = GetFilesV2(dir_path, "txt");

@@ -22,13 +22,15 @@ class RecTrtLogger : public nvinfer1::ILogger {
 };
 RecTrtLogger recLogger;
 
-Crnn::Crnn(const std::string &model_path, const std::string &dict_path, int batch_size)
+Crnn::Crnn(const std::string &model_path, const std::string &dict_path,
+           int batch_size)
     : batch_size_(batch_size) {
   LOG(INFO) << "Loading recognize model " << model_path;
 
   LoadDictionary(dict_path);
 
-  std::ifstream engine_file(model_path.c_str(), std::ios::in | std::ios::binary);
+  std::ifstream engine_file(model_path.c_str(),
+                            std::ios::in | std::ios::binary);
   CHECK(engine_file.good()) << "Can't load recognize model file";
   std::vector<char> model_stream;
   engine_file.seekg(0, engine_file.end);
@@ -37,12 +39,14 @@ Crnn::Crnn(const std::string &model_path, const std::string &dict_path, int batc
   model_stream.resize(model_size);
   engine_file.read(model_stream.data(), model_size);
   engine_file.close();
-  LOG(INFO) << "Recognize model size: " << static_cast<unsigned long long>(model_stream.size());
+  LOG(INFO) << "Recognize model size: "
+            << static_cast<unsigned long long>(model_stream.size());
 
   nvinfer1::IRuntime *runtime = nvinfer1::createInferRuntime(recLogger);
   CHECK(runtime) << "Recognize runtime creation failed!";
 
-  engine_ = runtime->deserializeCudaEngine(model_stream.data(), model_size, nullptr);
+  engine_ =
+      runtime->deserializeCudaEngine(model_stream.data(), model_size, nullptr);
   CHECK(engine_) << "Recognize engine deserialize failed!";
 
   context_ = engine_->createExecutionContext();
@@ -52,10 +56,12 @@ Crnn::Crnn(const std::string &model_path, const std::string &dict_path, int batc
 
   input_index_ = engine_->getBindingIndex("inputs");
   output_index_ = engine_->getBindingIndex("outputs");
-  nvinfer1::Dims input_dim = engine_->getBindingDimensions(engine_->getBindingIndex("inputs"));
+  nvinfer1::Dims input_dim =
+      engine_->getBindingDimensions(engine_->getBindingIndex("inputs"));
   context_->setOptimizationProfile(0);
   context_->setBindingDimensions(
-      input_index_, nvinfer1::Dims4(batch_size_, input_dim.d[1], input_dim.d[2], input_dim.d[3]));
+      input_index_, nvinfer1::Dims4(batch_size_, input_dim.d[1], input_dim.d[2],
+                                    input_dim.d[3]));
   host_buffers_.resize(2);
   gpu_buffers_.resize(2);
   MYCHECK(cudaStreamCreate(&stream_));
@@ -89,11 +95,13 @@ Crnn::~Crnn() {
   }
 }
 
-void Crnn::Forward(const std::vector<cv::Mat> &in, std::vector<std::string> *out) {
+void Crnn::Forward(const std::vector<cv::Mat> &in,
+                   std::vector<std::string> *out) {
   Inference(in);
   MYCHECK(cudaStreamSynchronize(stream_));
   for (int i = 0; i < in.size(); i++) {
-    std::vector<int> max_indexes(output_array_ + i * 60, output_array_ + (i + 1) * 60);
+    std::vector<int> max_indexes(output_array_ + i * 60,
+                                 output_array_ + (i + 1) * 60);
     out->emplace_back(Decode(max_indexes));
   }
 }
@@ -113,9 +121,13 @@ void Crnn::LoadDictionary(const std::string &dict_path) {
   LOG(INFO) << "Total word number in dict is " << dict_.size();
 }
 
-bool Crnn::HostMalloc(void **ptr, size_t size) { return cudaMallocHost(ptr, size) == cudaSuccess; }
+bool Crnn::HostMalloc(void **ptr, size_t size) {
+  return cudaMallocHost(ptr, size) == cudaSuccess;
+}
 
-bool Crnn::GpuMalloc(void **ptr, size_t size) { return cudaMalloc(ptr, size) == cudaSuccess; }
+bool Crnn::GpuMalloc(void **ptr, size_t size) {
+  return cudaMalloc(ptr, size) == cudaSuccess;
+}
 
 void Crnn::Inference(const std::vector<cv::Mat> &imgs) {
   for (size_t i = 0, vol = 48 * 480; i < imgs.size(); i++) {
@@ -125,24 +137,29 @@ void Crnn::Inference(const std::vector<cv::Mat> &imgs) {
     VLOG(1) << "img size: " << imgs[i].size;
     if (imgs[i].isContinuous()) {
       VLOG(1) << "continue";
-      memcpy(input_array_ + i * vol, (float *)imgs[i].ptr<float>(0), sizeof(float) * vol);
+      memcpy(input_array_ + i * vol, (float *)imgs[i].ptr<float>(0),
+             sizeof(float) * vol);
     } else {
       cv::Mat ii = imgs[i].clone();
-      memcpy(input_array_ + i * vol, (float *)ii.ptr<float>(0), sizeof(float) * vol);
+      memcpy(input_array_ + i * vol, (float *)ii.ptr<float>(0),
+             sizeof(float) * vol);
     }
   }
-  MYCHECK(cudaMemcpyAsync(gpu_buffers_[input_index_], host_buffers_[input_index_], input_size_,
+  MYCHECK(cudaMemcpyAsync(gpu_buffers_[input_index_],
+                          host_buffers_[input_index_], input_size_,
                           cudaMemcpyHostToDevice, stream_));
   CHECK(context_->enqueueV2(gpu_buffers_.data(), stream_, nullptr))
       << "Recognize inference failed.";
-  MYCHECK(cudaMemcpyAsync(host_buffers_[output_index_], gpu_buffers_[output_index_], output_size_,
+  MYCHECK(cudaMemcpyAsync(host_buffers_[output_index_],
+                          gpu_buffers_[output_index_], output_size_,
                           cudaMemcpyDeviceToHost, stream_));
 }
 
 std::string Crnn::Decode(const std::vector<int> &max_index) {
   std::string res;
   for (int i = 0; i < max_index.size(); i++) {
-    if (max_index[i] <= 0 || max_index[i] == max_index[i - 1])  // TODO: 去掉UNKNOWN
+    if (max_index[i] <= 0 ||
+        max_index[i] == max_index[i - 1])  // TODO: 去掉UNKNOWN
       continue;
     res += dict_[max_index[i]];
   }

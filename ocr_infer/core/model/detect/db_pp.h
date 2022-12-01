@@ -12,7 +12,8 @@ class DbPostprocessing {
  public:
   // TODO: Add construct function to set thresh and box_thresh.
 
-  void Parse(const cv::Mat &pred_map, const cv::Point2f &scales, std::vector<cv::RotatedRect> *out);
+  void Parse(const cv::Mat &pred_map, const cv::Point2f &scales,
+             std::vector<cv::RotatedRect> *out);
 
  private:
   // TODO:
@@ -23,10 +24,13 @@ class DbPostprocessing {
   int max_candicates = 100;
   int min_side = 3;
 
-  cv::Mat PartialVectorToMat(const cv::Mat &v, int y_start, int y_end, int x_start, int x_end);
+  cv::Mat PartialVectorToMat(const cv::Mat &v, int y_start, int y_end,
+                             int x_start, int x_end);
   float GetMeanScore(const cv::Mat &pred_map, const cv::RotatedRect &box);
-  std::vector<cv::Point> Unclip(const cv::RotatedRect &box, float Unclip_ratio = 1.5);
-  inline void MapToOriginImage(const cv::Point2f &scales, std::vector<cv::Point> &contour);
+  std::vector<cv::Point> Unclip(const cv::RotatedRect &box,
+                                float Unclip_ratio = 1.5);
+  inline void MapToOriginImage(const cv::Point2f &scales,
+                               std::vector<cv::Point> &contour);
 };
 
 #endif  // OCR_INFER_CORE_MODEL_DETECT_DB_PP_H_

@@ -2,13 +2,15 @@
 
 #include "glog/logging.h"
 
-MatchCore::MatchCore(const std::unordered_map<std::string, std::string> &config) {
+MatchCore::MatchCore(
+    const std::unordered_map<std::string, std::string> &config) {
   LOG(INFO) << "Match node init...";
 
   LOG(INFO) << "Match node init over!";
 }
 
-std::shared_ptr<MatchOutput> MatchCore::Process(const std::shared_ptr<RecOutput> &in) {
+std::shared_ptr<MatchOutput> MatchCore::Process(
+    const std::shared_ptr<RecOutput> &in) {
   auto out = std::make_shared<MatchOutput>();
 
   for (int i = 0; i < in->names.size(); i++) {

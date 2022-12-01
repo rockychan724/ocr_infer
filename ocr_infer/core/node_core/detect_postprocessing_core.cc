@@ -9,7 +9,8 @@ DetectPostProcessingCore::DetectPostProcessingCore(
   LOG(INFO) << "Detect postprocessing node init over!";
 }
 
-std::shared_ptr<DetBox> DetectPostProcessingCore::Process(const std::shared_ptr<DetOutput> &in) {
+std::shared_ptr<DetBox> DetectPostProcessingCore::Process(
+    const std::shared_ptr<DetOutput> &in) {
   VLOG(1) << "*** Detect postprocessing node, in size = " << in->images.size();
   if (in->images.size() == 0) {
     return {};
@@ -26,6 +27,7 @@ std::shared_ptr<DetBox> DetectPostProcessingCore::Process(const std::shared_ptr<
   out->names.assign(in->names.begin(), in->names.end());
   out->images.assign(in->images.begin(), in->images.end());
 
-  VLOG(1) << "*** Detect postprocessing node, out size = " << out->images.size();
+  VLOG(1) << "*** Detect postprocessing node, out size = "
+          << out->images.size();
   return out;
 }

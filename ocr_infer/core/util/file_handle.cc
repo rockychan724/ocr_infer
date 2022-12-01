@@ -7,7 +7,8 @@
 #include <cstring>
 #include <sstream>
 
-std::vector<std::string> GetFilesV1(std::string dir, const std::string &extension,
+std::vector<std::string> GetFilesV1(std::string dir,
+                                    const std::string &extension,
                                     bool is_recursive, bool with_path) {
   if (dir.back() != '/') {
     dir += "/";
@@ -29,9 +30,10 @@ std::vector<std::string> GetFilesV1(std::string dir, const std::string &extensio
       }
       if (entry->d_type == 4) {  // 子文件夹的处理
         if (is_recursive) {
-          std::vector<std::string> vFiles4subfolder =
-              GetFilesV1(dir + entry->d_name, extension, is_recursive, with_path);
-          filenames.insert(filenames.end(), vFiles4subfolder.begin(), vFiles4subfolder.end());
+          std::vector<std::string> vFiles4subfolder = GetFilesV1(
+              dir + entry->d_name, extension, is_recursive, with_path);
+          filenames.insert(filenames.end(), vFiles4subfolder.begin(),
+                           vFiles4subfolder.end());
         } else {
           continue;
         }
@@ -40,6 +42,7 @@ std::vector<std::string> GetFilesV1(std::string dir, const std::string &extensio
       bool isMatch = false;    // 判断当前文件是否是需要的文件
       if (extension == "*") {  // 扩展名为"*"时，只要是文件就保留
         isMatch = true;
+        `
       } else if (filename.substr(filename.find_last_of(".") + 1) == extension) {
         isMatch = true;
       }
@@ -63,7 +66,8 @@ std::vector<std::string> GetFilesV1(std::string dir, const std::string &extensio
  * @param pattern "/some/path/keyword_*.txt"
  * @return std::vector<std::string>
  */
-std::vector<std::string> GetFilesV2(std::string dir, const std::string &extension) {
+std::vector<std::string> GetFilesV2(std::string dir,
+                                    const std::string &extension) {
   if (dir.back() != '/') {
     dir += "/";
   }

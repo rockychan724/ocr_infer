@@ -17,7 +17,8 @@ class NodeBase {
 
   void SetUp(const std::unordered_map<std::string, std::string> &config,
              const std::shared_ptr<QueueReceiver<IType>> &in_queue,
-             const std::shared_ptr<QueueSender<OType>> &out_queue, const std::string &node_name) {
+             const std::shared_ptr<QueueSender<OType>> &out_queue,
+             const std::string &node_name) {
     in_queue_ = in_queue;
     out_queue_ = out_queue;
     node_name_ = node_name;
@@ -31,7 +32,8 @@ class NodeBase {
   std::shared_ptr<QueueSender<OType>> out_queue_;
   std::shared_ptr<std::thread> worker_;
 
-  virtual void InitCore(const std::unordered_map<std::string, std::string> &config) = 0;
+  virtual void InitCore(
+      const std::unordered_map<std::string, std::string> &config) = 0;
 
   virtual void Run() = 0;
 };
@@ -42,7 +44,8 @@ class Node : public NodeBase<IType, OType> {
  protected:
   std::unique_ptr<NodeCoreBase<IType, OType>> core_;
 
-  void InitCore(const std::unordered_map<std::string, std::string> &config) override {
+  void InitCore(
+      const std::unordered_map<std::string, std::string> &config) override {
     core_ = std::make_unique<CType>(config);
   }
 
@@ -60,7 +63,8 @@ class Buffer : public NodeBase<IType, OType> {
  protected:
   std::unique_ptr<BufferCoreBase<IType, OType>> core_;
 
-  void InitCore(const std::unordered_map<std::string, std::string> &config) override {
+  void InitCore(
+      const std::unordered_map<std::string, std::string> &config) override {
     core_ = std::make_unique<CType>(config);
   }
 

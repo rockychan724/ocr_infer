@@ -13,8 +13,8 @@ class ClipCore : public NodeCoreBase<DetBox, RecInput> {
  private:
   cv::Size rec_input_size_;
 
-  cv::Mat GetRotateCropImage(const cv::Mat &src_image, const cv::RotatedRect &box,
-                             const cv::Size &s);
+  cv::Mat GetRotateCropImage(const cv::Mat &src_image,
+                             const cv::RotatedRect &box, const cv::Size &s);
 };
 
 #endif  // OCR_INFER_CORE_NODE_CORE_CLIP_CORE_H_

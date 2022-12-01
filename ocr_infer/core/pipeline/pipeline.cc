@@ -26,9 +26,11 @@ class PipelineE2e {
     det_node_.SetUp(config, det_input_pair.second, det_output_pair.first, "");
     det_pp_node_.SetUp(config, det_output_pair.second, det_box_pair.first, "");
     clip_node_.SetUp(config, det_box_pair.second, rec_input_pair1.first, "");
-    buffer_node_.SetUp(config, rec_input_pair1.second, rec_input_pair2.first, "");
+    buffer_node_.SetUp(config, rec_input_pair1.second, rec_input_pair2.first,
+                       "");
     rec_node_.SetUp(config, rec_input_pair2.second, rec_output_pair.first, "");
-    match_node_.SetUp(config, rec_output_pair.second, match_output_pair.first, "");
+    match_node_.SetUp(config, rec_output_pair.second, match_output_pair.first,
+                      "");
     e2e_receiver_ = match_output_pair.second;
   }
 
@@ -42,7 +44,8 @@ class PipelineE2e {
 };
 
 E2eInOutPair PipelineFactory::BuildE2e(const Config &config) {
-  // std::shared_ptr<PipelineE2e> pipeline = std::make_shared<PipelineE2e>(config);
+  // std::shared_ptr<PipelineE2e> pipeline =
+  // std::make_shared<PipelineE2e>(config);
   auto pipeline = new PipelineE2e(config);
   return std::make_pair(pipeline->e2e_sender_, pipeline->e2e_receiver_);
 }

@@ -4,26 +4,32 @@
 
 #include "glog/logging.h"
 
-RecognizeCore::RecognizeCore(const std::unordered_map<std::string, std::string> &config) {
+RecognizeCore::RecognizeCore(
+    const std::unordered_map<std::string, std::string> &config) {
   LOG(INFO) << "Recognize node init...";
   recognizer_num_ = std::stoi(Inquire(config, "recognizer_num"));
   int rec_batch_size = std::stoi(Inquire(config, "reco_batch_size"));
-  LOG(INFO) << "recognizer_num_ = " << recognizer_num_ << ", rec_batch_size = " << rec_batch_size;
+  LOG(INFO) << "recognizer_num_ = " << recognizer_num_
+            << ", rec_batch_size = " << rec_batch_size;
 
   // TODO: to be more intelligent
   std::string model_path =
-      "/home/chenlei/Documents/cnc/configuration/cnc_data/engines/2022/crnn_both_100.fp16";
+      "/home/chenlei/Documents/cnc/configuration/cnc_data/engines/2022/"
+      "crnn_both_100.fp16";
   std::string dict_path =
-      "/home/chenlei/Documents/cnc/configuration/cnc_data/rec_dict/dict_cjke.txt";
+      "/home/chenlei/Documents/cnc/configuration/cnc_data/rec_dict/"
+      "dict_cjke.txt";
   recognizer_.resize(recognizer_num_);
   for (int i = 0; i < recognizer_num_; i++) {
-    recognizer_[i] = std::make_unique<Crnn>(model_path, dict_path, rec_batch_size);
+    recognizer_[i] =
+        std::make_unique<Crnn>(model_path, dict_path, rec_batch_size);
   }
 
   LOG(INFO) << "Recognize node init over!";
 }
 
-std::shared_ptr<RecOutput> RecognizeCore::Process(const std::shared_ptr<RecInput> &in) {
+std::shared_ptr<RecOutput> RecognizeCore::Process(
+    const std::shared_ptr<RecInput> &in) {
   VLOG(1) << "*** Recognize node, in size = " << in->clips.size();
   if (in->clips.size() == 0) {
     return {};
@@ -41,16 +47,18 @@ std::shared_ptr<RecOutput> RecognizeCore::Process(const std::shared_ptr<RecInput
   for (int i = 0; i < recognizer_num_; i++) {
     std::vector<cv::Mat> sub_image(in->clips.begin() + i * one_batch,
                                    in->clips.begin() + (i + 1) * one_batch);
-    threads.emplace_back(std::make_unique<std::thread>([this, &output_result, i, sub_image]() {
-      this->recognizer_[i]->Forward(sub_image, &output_result[i]);
-    }));
+    threads.emplace_back(
+        std::make_unique<std::thread>([this, &output_result, i, sub_image]() {
+          this->recognizer_[i]->Forward(sub_image, &output_result[i]);
+        }));
   }
   for (int i = 0; i < recognizer_num_; i++) {
     threads[i]->join();
     if (!output_result[i].empty()) {
       std::for_each(output_result[i].begin(), output_result[i].end(),
                     [](const std::string &item) { VLOG(1) << item; });
-      out->text.insert(out->text.end(), output_result[i].begin(), output_result[i].end());
+      out->text.insert(out->text.end(), output_result[i].begin(),
+                       output_result[i].end());
     }
   }
 

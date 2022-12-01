@@ -7,9 +7,11 @@
 
 class DetectPostProcessingCore : public NodeCoreBase<DetOutput, DetBox> {
  public:
-  DetectPostProcessingCore(const std::unordered_map<std::string, std::string> &config);
+  DetectPostProcessingCore(
+      const std::unordered_map<std::string, std::string> &config);
 
-  std::shared_ptr<DetBox> Process(const std::shared_ptr<DetOutput> &in) override;
+  std::shared_ptr<DetBox> Process(
+      const std::shared_ptr<DetOutput> &in) override;
 
  private:
   std::unique_ptr<DbPostprocessing> det_pp_;

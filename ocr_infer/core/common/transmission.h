@@ -58,14 +58,17 @@ template <typename DType>
 class QueueFactory {
  public:
   typedef tbb::concurrent_bounded_queue<std::shared_ptr<DType>> TbbQueue;
-  typedef std::pair<std::shared_ptr<QueueSender<DType>>, std::shared_ptr<QueueReceiver<DType>>>
+  typedef std::pair<std::shared_ptr<QueueSender<DType>>,
+                    std::shared_ptr<QueueReceiver<DType>>>
       QueuePair;
 
   static QueuePair BuildQueue(int capacity = 2) {
     std::shared_ptr<TbbQueue> q = std::make_shared<TbbQueue>();
     q->set_capacity(capacity);
-    std::shared_ptr<QueueSender<DType>> sender = std::make_shared<QueueSender<DType>>(q);
-    std::shared_ptr<QueueReceiver<DType>> receiver = std::make_shared<QueueReceiver<DType>>(q);
+    std::shared_ptr<QueueSender<DType>> sender =
+        std::make_shared<QueueSender<DType>>(q);
+    std::shared_ptr<QueueReceiver<DType>> receiver =
+        std::make_shared<QueueReceiver<DType>>(q);
     return std::make_pair(sender, receiver);
   }
 };

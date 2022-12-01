@@ -39,14 +39,16 @@ void Trim(string &str) {
   str = str.substr(start_pos, end_pos - start_pos + 1);
 }
 
-bool AnalyseLine(const string &line, string &section, string &key, string &value) {
+bool AnalyseLine(const string &line, string &section, string &key,
+                 string &value) {
   if (line.empty()) return false;
   int start_pos = 0, end_pos = line.size() - 1, pos, s_startpos, s_endpos;
   if ((pos = line.find(";")) != -1) {
     if (0 == pos) return false;
     end_pos = pos - 1;
   }
-  if (((s_startpos = line.find("[")) != -1) && ((s_endpos = line.find("]"))) != -1) {
+  if (((s_startpos = line.find("[")) != -1) &&
+      ((s_endpos = line.find("]"))) != -1) {
     section = line.substr(s_startpos + 1, s_endpos - 1);
     return true;
   }
@@ -62,7 +64,8 @@ bool AnalyseLine(const string &line, string &section, string &key, string &value
   return true;
 }
 
-bool read_config(string config_file, unordered_map<string, string> &config_map, string section) {
+bool read_config(string config_file, unordered_map<string, string> &config_map,
+                 string section) {
   ifstream infile(config_file.c_str());
   if (!infile) return false;
   string line, key, value, _section;

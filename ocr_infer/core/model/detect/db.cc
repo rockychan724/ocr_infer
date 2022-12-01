@@ -23,9 +23,11 @@ class DetTrtLogger : public nvinfer1::ILogger {
 
 DetTrtLogger detLogger;
 
-Db::Db(const std::string &model_path, int batch_size) : batch_size_(batch_size) {
+Db::Db(const std::string &model_path, int batch_size)
+    : batch_size_(batch_size) {
   LOG(INFO) << "Loading detect model " << model_path;
-  std::ifstream engine_file(model_path.c_str(), std::ios::in | std::ios::binary);
+  std::ifstream engine_file(model_path.c_str(),
+                            std::ios::in | std::ios::binary);
   CHECK(engine_file.good()) << "Can't load detect model file";
   std::vector<char> model_stream;
   engine_file.seekg(0, engine_file.end);
@@ -34,12 +36,14 @@ Db::Db(const std::string &model_path, int batch_size) : batch_size_(batch_size) 
   model_stream.resize(model_size);
   engine_file.read(model_stream.data(), model_size);
   engine_file.close();
-  LOG(INFO) << "Detect model size: " << static_cast<unsigned long long>(model_stream.size());
+  LOG(INFO) << "Detect model size: "
+            << static_cast<unsigned long long>(model_stream.size());
 
   nvinfer1::IRuntime *runtime = nvinfer1::createInferRuntime(detLogger);
   CHECK(runtime) << "Detect runtime creation failed!";
 
-  engine_ = runtime->deserializeCudaEngine(model_stream.data(), model_size, nullptr);
+  engine_ =
+      runtime->deserializeCudaEngine(model_stream.data(), model_size, nullptr);
   CHECK(engine_) << "Detect engine deserialize failed!";
 
   context_ = engine_->createExecutionContext();
@@ -49,10 +53,12 @@ Db::Db(const std::string &model_path, int batch_size) : batch_size_(batch_size) 
 
   input_index_ = engine_->getBindingIndex("inputs");
   output_index_ = engine_->getBindingIndex("outputs");
-  nvinfer1::Dims input_dim = engine_->getBindingDimensions(engine_->getBindingIndex("inputs"));
+  nvinfer1::Dims input_dim =
+      engine_->getBindingDimensions(engine_->getBindingIndex("inputs"));
   context_->setOptimizationProfile(0);
   context_->setBindingDimensions(
-      input_index_, nvinfer1::Dims4(batch_size_, input_dim.d[1], input_dim.d[2], input_dim.d[3]));
+      input_index_, nvinfer1::Dims4(batch_size_, input_dim.d[1], input_dim.d[2],
+                                    input_dim.d[3]));
   host_buffers_.resize(2);
   gpu_buffers_.resize(2);
   MYCHECK(cudaStreamCreate(&stream_));
@@ -91,14 +97,19 @@ void Db::Forward(const std::vector<cv::Mat> &in, std::vector<cv::Mat> *out) {
   MYCHECK(cudaStreamSynchronize(stream_));
   for (size_t h = 0, vol = 512 * 512; h < in.size(); h++) {
     cv::Mat res(cv::Size(512, 512), CV_32FC1);
-    memcpy((float *)res.ptr<float>(0), output_array_ + h * vol, sizeof(float) * vol);
+    memcpy((float *)res.ptr<float>(0), output_array_ + h * vol,
+           sizeof(float) * vol);
     out->emplace_back(res);
   }
 }
 
-bool Db::HostMalloc(void **ptr, size_t size) { return cudaMallocHost(ptr, size) == cudaSuccess; }
+bool Db::HostMalloc(void **ptr, size_t size) {
+  return cudaMallocHost(ptr, size) == cudaSuccess;
+}
 
-bool Db::GpuMalloc(void **ptr, size_t size) { return cudaMalloc(ptr, size) == cudaSuccess; }
+bool Db::GpuMalloc(void **ptr, size_t size) {
+  return cudaMalloc(ptr, size) == cudaSuccess;
+}
 
 // TODO: 待优化，省去循环
 void Db::Inference(const std::vector<cv::Mat> &imgs) {
@@ -109,15 +120,20 @@ void Db::Inference(const std::vector<cv::Mat> &imgs) {
     VLOG(1) << "img size: " << imgs[i].size;
     if (imgs[i].isContinuous()) {
       VLOG(1) << "continue";
-      memcpy(input_array_ + i * vol, (float *)imgs[i].ptr<float>(0), sizeof(float) * vol);
+      memcpy(input_array_ + i * vol, (float *)imgs[i].ptr<float>(0),
+             sizeof(float) * vol);
     } else {
       cv::Mat ii = imgs[i].clone();
-      memcpy(input_array_ + i * vol, (float *)ii.ptr<float>(0), sizeof(float) * vol);
+      memcpy(input_array_ + i * vol, (float *)ii.ptr<float>(0),
+             sizeof(float) * vol);
     }
   }
-  MYCHECK(cudaMemcpyAsync(gpu_buffers_[input_index_], host_buffers_[input_index_], input_size_,
+  MYCHECK(cudaMemcpyAsync(gpu_buffers_[input_index_],
+                          host_buffers_[input_index_], input_size_,
                           cudaMemcpyHostToDevice, stream_));
-  CHECK(context_->enqueueV2(gpu_buffers_.data(), stream_, nullptr)) << "Detect inference failed.";
-  MYCHECK(cudaMemcpyAsync(host_buffers_[output_index_], gpu_buffers_[output_index_], output_size_,
+  CHECK(context_->enqueueV2(gpu_buffers_.data(), stream_, nullptr))
+      << "Detect inference failed.";
+  MYCHECK(cudaMemcpyAsync(host_buffers_[output_index_],
+                          gpu_buffers_[output_index_], output_size_,
                           cudaMemcpyDeviceToHost, stream_));
 }

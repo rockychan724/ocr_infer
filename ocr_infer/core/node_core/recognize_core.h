@@ -9,7 +9,8 @@ class RecognizeCore : public NodeCoreBase<RecInput, RecOutput> {
  public:
   RecognizeCore(const std::unordered_map<std::string, std::string> &config);
 
-  std::shared_ptr<RecOutput> Process(const std::shared_ptr<RecInput> &in) override;
+  std::shared_ptr<RecOutput> Process(
+      const std::shared_ptr<RecInput> &in) override;
 
  private:
   int recognizer_num_;

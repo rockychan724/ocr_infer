@@ -10,7 +10,8 @@
 
 class Crnn {
  public:
-  Crnn(const std::string &model_path, const std::string &dict_path, int batch_size);
+  Crnn(const std::string &model_path, const std::string &dict_path,
+       int batch_size);
 
   ~Crnn();
 

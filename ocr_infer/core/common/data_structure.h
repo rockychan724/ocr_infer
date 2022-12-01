@@ -9,7 +9,7 @@
 
 typedef int KeywordId;
 
-// TODO: 
+// TODO:
 // 1. 使用指针存储数据
 // 2. 添加 id 属性（现在暂时把 name 当成 id）
 struct DetInput {

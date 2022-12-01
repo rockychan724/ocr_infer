@@ -9,7 +9,8 @@ class DetectCore : public NodeCoreBase<DetInput, DetOutput> {
  public:
   DetectCore(const std::unordered_map<std::string, std::string> &config);
 
-  std::shared_ptr<DetOutput> Process(const std::shared_ptr<DetInput> &in) override;
+  std::shared_ptr<DetOutput> Process(
+      const std::shared_ptr<DetInput> &in) override;
 
  private:
   int detector_num_;

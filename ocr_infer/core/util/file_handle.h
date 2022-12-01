@@ -4,7 +4,8 @@
 #include <string>
 #include <vector>
 
-std::vector<std::string> GetFilesV1(std::string dir, const std::string &extension,
+std::vector<std::string> GetFilesV1(std::string dir,
+                                    const std::string &extension,
                                     bool is_recursive, bool with_path);
 
 /**
@@ -13,6 +14,7 @@ std::vector<std::string> GetFilesV1(std::string dir, const std::string &extensio
  * @param pattern "/some/path/keyword_*.txt"
  * @return std::vector<std::string>
  */
-std::vector<std::string> GetFilesV2(std::string dir, const std::string &extension);
+std::vector<std::string> GetFilesV2(std::string dir,
+                                    const std::string &extension);
 
 #endif  // OCR_INFER_CORE_UTIL_FILE_HANDLE_H_

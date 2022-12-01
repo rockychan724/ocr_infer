@@ -11,7 +11,6 @@ class MatcherBase {
   virtual KeywordId Parse(const std::vector<std::string> &text) = 0;
 
  private:
-  
 };
 
 #endif  // OCR_INFER_CORE_MATCH_MATCHER_BASE_H_
