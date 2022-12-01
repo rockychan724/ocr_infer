@@ -17,4 +17,6 @@ std::vector<std::string> GetFilesV1(std::string dir,
 std::vector<std::string> GetFilesV2(std::string dir,
                                     const std::string &extension);
 
+std::vector<std::wstring> ReadUnicodeFile(const std::string &filename);
+
 #endif  // OCR_INFER_CORE_UTIL_FILE_HANDLE_H_

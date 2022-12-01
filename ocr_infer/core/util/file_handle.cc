@@ -5,7 +5,10 @@
 
 #include <algorithm>
 #include <cstring>
+#include <fstream>
 #include <sstream>
+
+#include "glog/logging.h"
 
 std::vector<std::string> GetFilesV1(std::string dir,
                                     const std::string &extension,
@@ -42,7 +45,6 @@ std::vector<std::string> GetFilesV1(std::string dir,
       bool isMatch = false;    // 判断当前文件是否是需要的文件
       if (extension == "*") {  // 扩展名为"*"时，只要是文件就保留
         isMatch = true;
-        `
       } else if (filename.substr(filename.find_last_of(".") + 1) == extension) {
         isMatch = true;
       }
@@ -97,4 +99,48 @@ std::vector<std::string> GetFilesV2(std::string dir,
 
   // done
   return filenames;
+}
+
+std::vector<std::wstring> ReadUnicodeFile(const std::string &filename) {
+  std::vector<std::wstring> re;
+  std::ifstream ifs_(filename, std::ios::in | std::ios::binary | std::ios::ate);
+  if (!ifs_) {
+    LOG(WARNING) << "Can't open file " << filename;
+    return re;
+  }
+
+  ifs_.seekg(2, std::ios::beg);
+  std::wstring ws = L"";
+  while (true) {
+    wchar_t wc = 0x0000;
+    ifs_.read((char *)(&wc), 2);
+
+    if (wc == '\r') {
+      continue;
+    }
+
+    if (wc == 0x0000 || wc == 0x000a) {
+      wchar_t *tmp_ws = new wchar_t[ws.size() + 1];
+      for (int i = 0; i < ws.size(); i++) {
+        tmp_ws[i] = ws[i];
+      }
+      tmp_ws[ws.size()] = 0x0000;
+      if (ws.size() != 0) {
+        std::wstring tmp_ws_mid = tmp_ws;
+        std::transform(tmp_ws_mid.begin(), tmp_ws_mid.end(), tmp_ws_mid.begin(),
+                       towupper);
+        re.emplace_back(tmp_ws_mid);
+      }
+      ws = L"";
+      delete[] tmp_ws;
+    } else {
+      ws += wc;
+    }
+    if (wc == 0x0000) {
+      break;
+    }
+  }
+
+  ifs_.close();
+  return re;
 }
