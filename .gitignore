@@ -36,3 +36,4 @@
 .vscode/
 build/
 cmake-build-*
+data/

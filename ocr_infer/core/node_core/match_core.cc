@@ -6,6 +6,9 @@ MatchCore::MatchCore(
     const std::unordered_map<std::string, std::string> &config) {
   LOG(INFO) << "Match node init...";
 
+  const std::string keyword_dir = Inquire(config, "keyword_dir");
+  matcher_engine_ = std::make_unique<MatcherEngine>(keyword_dir);
+
   LOG(INFO) << "Match node init over!";
 }
 
@@ -24,6 +27,13 @@ std::shared_ptr<MatchOutput> MatchCore::Process(
 
   for (auto it = out->name2text.begin(); it != out->name2text.end(); it++) {
     out->name2hitid[it->first] = matcher_engine_->Match(it->second);
+    // debug
+    std::stringstream ss;
+    std::for_each(it->second.begin(), it->second.end(), [&ss](const std::string &str){
+      ss << str << "; ";
+    });
+    VLOG(1) << it->first << ", " << ss.str() << ", "
+            << out->name2hitid[it->first];
   }
 
   return out;

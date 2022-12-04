@@ -64,8 +64,8 @@ bool AnalyseLine(const string &line, string &section, string &key,
   return true;
 }
 
-bool read_config(string config_file, unordered_map<string, string> &config_map,
-                 string section) {
+bool read_config(const string &config_file, const string &section,
+                 unordered_map<string, string> &config_map) {
   ifstream infile(config_file.c_str());
   if (!infile) return false;
   string line, key, value, _section;

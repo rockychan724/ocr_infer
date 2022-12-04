@@ -1,11 +1,12 @@
 #ifndef OCR_INFER_CORE_MATCH_FUZZY_FUZZY_MATCHER_H_
 #define OCR_INFER_CORE_MATCH_FUZZY_FUZZY_MATCHER_H_
 
-#include "ocr_infer/core/match/matcher_base.h"
+#include <string>
+#include <vector>
 
-class FuzzyMatcher : public MatcherBase {
+class FuzzyMatcher {
  public:
-  KeywordId Parse(const std::vector<std::string> &text);
+  std::vector<std::wstring> Parse(const std::wstring &text);
 };
 
 #endif  // OCR_INFER_CORE_MATCH_FUZZY_FUZZY_MATCHER_H_

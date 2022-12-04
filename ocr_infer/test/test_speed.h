@@ -10,11 +10,9 @@
 
 class TestSpeed {
  public:
-  TestSpeed(const std::string &, int) {
+  TestSpeed(const std::string &config_file, int opt) {
     std::unordered_map<std::string, std::string> config;
-    if (!read_config("/home/chenlei/Documents/cnc/ocr_infer/ocr_infer/test/"
-                     "config_cnc.ini",
-                     config, "configuration")) {
+    if (!read_config(config_file, "configuration", config)) {
       printf("read config.ini failed\n");
       exit(1);
     }
@@ -31,11 +29,10 @@ class TestSpeed {
     consumer_ = std::make_shared<std::thread>([this]() { Consume(); });
   }
 
-  void Run() {
+  void Run(const std::string &test_data_dir) {
     std::vector<cv::Mat> images;
     std::vector<std::string> names;
-    size_t count =
-        ReadImages("/home/chenlei/Documents/cnc/testdata/image", images, names);
+    size_t count = ReadImages(test_data_dir, images, names);
     int id = 0;
     double tick_fake_start = Timer::GetMillisecond();
     double tick_start, tick_end;
