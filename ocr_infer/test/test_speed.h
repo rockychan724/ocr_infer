@@ -26,7 +26,7 @@ class TestSpeed {
     auto pipeline_io = PipelineFactory::BuildE2e(config);
     sender_ = pipeline_io.first, receiver_ = pipeline_io.second;
 
-    consumer_ = std::make_shared<std::thread>([this]() { Consume(); });
+    consumer_ = std::make_shared<std::thread>([this]() { ConsumeAndMatch(); });
   }
 
   void Run(const std::string &test_data_dir) {
@@ -88,11 +88,78 @@ class TestSpeed {
   std::shared_ptr<QueueReceiver<MatchOutput>> receiver_;
   std::shared_ptr<std::thread> consumer_;
 
+  std::unordered_map<std::string, int> saved_num_;
+
   int detect_batch_size_;
 
-  void Consume() {
+  void OnlyConsume() {
     while (1) {
       receiver_->pop();
+    }
+  }
+
+  void ConsumeAndMatch() {
+    std::string output_dir = "/home/chenlei/Documents/cnc/rec_output/";
+    if (access(output_dir.c_str(), 0) == 0) {
+      std::string cmd = "rm -r " + output_dir;
+      system(cmd.c_str());
+    }
+    if (mkdir(output_dir.c_str(), 0777) == -1) {
+      printf("Cannot make \"%s\"!\n", output_dir.c_str());
+      exit(1);
+    }
+    while (1) {
+      auto res = receiver_->pop();
+      MatAndPrintResultProcess(res);
+    }
+  }
+
+  // print intermediate results
+  void MatAndPrintResultProcess(std::shared_ptr<MatchOutput> res) {
+    for (auto it = res->name2box_num.begin(); it != res->name2box_num.end();
+         it++) {
+      std::string name = it->first;
+      std::string file =
+          "/home/chenlei/Documents/cnc/rec_output/" + name + ".txt";
+      std::stringstream ss;
+      std::cout << name << " has " << it->second << " CiTiaos:" << std::endl;
+      size_t result_num = res->name2text[name].size();
+      for (size_t i = 0; i < result_num; i++) {
+        std::string text = res->name2text[name][i];
+        cv::RotatedRect box = res->name2boxes[name][i];
+        cv::Point2f vertices2f[4];
+        box.points(vertices2f);
+        cv::Point root_points[1][4];
+        for (int j = 0; j < 4; ++j) {
+          ss << int(vertices2f[j].x) << "," << int(vertices2f[j].y) << ",";
+        }
+        std::cout << "\t" << text << std::endl;
+        ss << text << std::endl;
+      }
+      std::cout << "*** hit id = " << res->name2hitid[name] << std::endl;
+      // std::vector<string> hit_content =
+      //     extern_interface.find_sensi_word(res->name2hitid[name]);
+      // for (auto h = hit_content.begin(); h != hit_content.end(); h++) {
+      //   std::cout << "\t" << *h << std::endl;
+      // }
+
+      // 完整地保存识别结果，方便准确测试
+      if (saved_num_.find(name) == saved_num_.end()) {
+        std::ofstream ofs(file.c_str());
+        if (!ofs.is_open()) {
+          std::cout << "Can't open output file! Please check file path."
+                    << std::endl;
+          continue;
+        }
+        ofs << ss.rdbuf();
+        ofs.close();
+        saved_num_.insert({name, res->name2text[name].size()});
+      } else if (saved_num_[name] < it->second) {
+        std::ofstream ofs(file.c_str(), ios::app);
+        ofs << ss.rdbuf();
+        ofs.close();
+        saved_num_[name] += res->name2text[name].size();
+      }
     }
   }
 
