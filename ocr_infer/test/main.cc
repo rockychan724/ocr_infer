@@ -1,12 +1,10 @@
-#include <sys/stat.h>
-#include <unistd.h>
-
 #include <iostream>
 #include <string>
 #include <unordered_map>
 
 #include "glog/logging.h"
 #include "ocr_infer/test/test_speed.h"
+#include "ocr_infer/test/util/syscall.h"
 
 void PrintUsage(const char* program) {
   std::cout << "Usage: " << program << "CONFIG_FILE_PATH TEST_DATA_DIR\n";
@@ -20,8 +18,8 @@ int main(int argc, char** argv) {
   std::string log_dir = "log";
   FLAGS_log_dir = log_dir;
 
-  if (access(log_dir.c_str(), F_OK) == -1) {
-    if (mkdir(log_dir.c_str(), 0775) == -1) {
+  if (Access(log_dir.c_str(), 0) == -1) {
+    if (Mkdir(log_dir.c_str(), 0775) == -1) {
       std::stringstream ss;
       ss << "mkdir: can't mkdir named \"" << log_dir << "\"";
       perror(ss.str().c_str());

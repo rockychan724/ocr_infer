@@ -6,6 +6,7 @@
 
 #include "ocr_infer/core/pipeline/pipeline.h"
 #include "ocr_infer/test/util/read_config.h"
+#include "ocr_infer/test/util/syscall.h"
 #include "ocr_infer/test/util/timer.h"
 
 class TestSpeed {
@@ -100,11 +101,11 @@ class TestSpeed {
 
   void ConsumeAndMatch() {
     std::string output_dir = "/home/chenlei/Documents/cnc/rec_output/";
-    if (access(output_dir.c_str(), 0) == 0) {
+    if (Access(output_dir.c_str(), 0) == 0) {
       std::string cmd = "rm -r " + output_dir;
       system(cmd.c_str());
     }
-    if (mkdir(output_dir.c_str(), 0777) == -1) {
+    if (Mkdir(output_dir.c_str(), 0777) == -1) {
       printf("Cannot make \"%s\"!\n", output_dir.c_str());
       exit(1);
     }
