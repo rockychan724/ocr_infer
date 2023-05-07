@@ -81,7 +81,10 @@ class TestSpeed {
     }
     printf("Waiting 10 seconds for pipeline synchronization.\n");
     fflush(stdout);
-    sleep(10);
+    for (int i = 0; i < 20; i++) {
+      std::cout << "Run over!\n";
+      sleep(1);
+    }
     std::exit(0);
   }
 
