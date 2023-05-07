@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <random>
+#include <thread>
 
 #include "ocr_infer/core/pipeline/pipeline.h"
 #include "ocr_infer/test/util/read_config.h"

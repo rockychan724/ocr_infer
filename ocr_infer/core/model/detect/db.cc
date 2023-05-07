@@ -16,7 +16,7 @@
   } while (0)
 
 class DetTrtLogger : public nvinfer1::ILogger {
-  void log(Severity severity, const char *msg) override {
+  void log(Severity severity, const char *msg) noexcept override {
     if (severity != Severity::kINFO) printf("%s\n", msg);
   }
 };

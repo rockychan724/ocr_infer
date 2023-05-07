@@ -12,6 +12,7 @@ target_link_libraries(
   test_file_handle
   file_handle
   -lgtest -lgtest_main
+  -lpthread
 )
 # add_test(NAME test_file_handle COMMAND test_file_handle)
 
@@ -20,5 +21,6 @@ add_executable(test_code_convert code_convert_test.cc)
 target_link_libraries(
   test_code_convert
   -lgtest -lgtest_main
+  -lpthread
 )
 # add_test(NAME test_code_convert COMMAND test_code_convert)

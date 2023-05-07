@@ -7,4 +7,5 @@ target_link_libraries(
   core
   -lopencv_core -lopencv_imgcodecs -lopencv_highgui -lopencv_imgproc
   -lglog
+  -lpthread
 )

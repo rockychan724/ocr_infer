@@ -16,7 +16,7 @@
   } while (0)
 
 class RecTrtLogger : public nvinfer1::ILogger {
-  void log(Severity severity, const char *msg) override {
+  void log(Severity severity, const char *msg) noexcept override {
     if (severity != Severity::kINFO) printf("%s\n", msg);
   }
 };
@@ -148,6 +148,9 @@ void Crnn::Inference(const std::vector<cv::Mat> &imgs) {
   MYCHECK(cudaMemcpyAsync(gpu_buffers_[input_index_],
                           host_buffers_[input_index_], input_size_,
                           cudaMemcpyHostToDevice, stream_));
+  if (gpu_buffers_.size() == 0) {
+    std::cout << "****** error!\n";
+  }
   CHECK(context_->enqueueV2(gpu_buffers_.data(), stream_, nullptr))
       << "Recognize inference failed.";
   MYCHECK(cudaMemcpyAsync(host_buffers_[output_index_],

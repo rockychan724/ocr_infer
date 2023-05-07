@@ -14,10 +14,13 @@ DetectCore::DetectCore(
   LOG(INFO) << "detector_ = " << detector_num_
             << ", det_batch_size = " << det_batch_size;
 
-  // TODO: to be more intelligent
-  std::string model_path =
-      "/home/chenlei/Documents/cnc/configuration/cnc_data/engines/2022/"
-      "db_resnet_50.fp16";
+  std::string root_path = Inquire(config, "root_path");
+  if (root_path.back() != '/') {
+    root_path += "/";
+  }
+  std::string detect_model = Inquire(config, "detect_model");
+  std::string model_path = root_path + detect_model;
+
   detector_.resize(detector_num_);
   for (int i = 0; i < detector_num_; i++) {
     detector_[i] = std::make_unique<Db>(model_path, det_batch_size);

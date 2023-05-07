@@ -12,13 +12,15 @@ RecognizeCore::RecognizeCore(
   LOG(INFO) << "recognizer_num_ = " << recognizer_num_
             << ", rec_batch_size = " << rec_batch_size;
 
-  // TODO: to be more intelligent
-  std::string model_path =
-      "/home/chenlei/Documents/cnc/configuration/cnc_data/engines/2022/"
-      "crnn_both_100.fp16";
-  std::string dict_path =
-      "/home/chenlei/Documents/cnc/configuration/cnc_data/rec_dict/"
-      "dict_cjke.txt";
+  std::string root_path = Inquire(config, "root_path");
+  if (root_path.back() != '/') {
+    root_path += "/";
+  }
+  std::string recengine_zhenjpko = Inquire(config, "recengine_zhenjpko");
+  std::string dict_zhenjpko = Inquire(config, "dict_zhenjpko");
+  std::string model_path = root_path + recengine_zhenjpko;
+  std::string dict_path = root_path + dict_zhenjpko;
+
   recognizer_.resize(recognizer_num_);
   for (int i = 0; i < recognizer_num_; i++) {
     recognizer_[i] =
