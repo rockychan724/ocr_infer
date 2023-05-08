@@ -33,21 +33,22 @@ struct DetBox {
 struct RecInput {
   std::vector<std::string> names;
   std::vector<cv::Mat> clips;
-  std::vector<int> box_num;
+  std::vector<int> boxnum;
   std::vector<cv::RotatedRect> boxes;
 };
 
 struct RecOutput {
   std::vector<std::string> names;
   std::vector<std::string> text;
-  std::vector<int> box_num;
+  std::vector<int> boxnum;
   std::vector<cv::RotatedRect> boxes;
 };
 
 struct MatchOutput {
-  std::unordered_map<std::string, int> name2box_num;
+  std::unordered_map<std::string, int> name2boxnum;
   std::unordered_map<std::string, std::vector<std::string>> name2text;
   std::unordered_map<std::string, std::vector<cv::RotatedRect>> name2boxes;
+  // TODO: 考虑命中多个敏感词 KeywordId -> std::vector<KeywordId>
   std::unordered_map<std::string, KeywordId> name2hitid;
 };
 

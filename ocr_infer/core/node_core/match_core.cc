@@ -24,8 +24,8 @@ std::shared_ptr<MatchOutput> MatchCore::Process(
 
   for (int i = 0; i < in->names.size(); i++) {
     const std::string &key = in->names[i];
-    if (out->name2box_num.find(key) == out->name2box_num.end()) {
-      out->name2box_num.insert({key, in->box_num[i]});
+    if (out->name2boxnum.find(key) == out->name2boxnum.end()) {
+      out->name2boxnum.insert({key, in->boxnum[i]});
     }
     out->name2text[key].emplace_back(in->text[i]);
     out->name2boxes[key].emplace_back(in->boxes[i]);
@@ -33,13 +33,13 @@ std::shared_ptr<MatchOutput> MatchCore::Process(
 
   for (auto it = out->name2text.begin(); it != out->name2text.end(); it++) {
     out->name2hitid[it->first] = matcher_engine_->Match(it->second);
-    // debug
-    std::stringstream ss;
-    std::for_each(it->second.begin(), it->second.end(), [&ss](const std::string &str){
-      ss << str << "; ";
-    });
-    VLOG(1) << it->first << ", " << ss.str() << ", "
-            << out->name2hitid[it->first];
+    // // debug
+    // std::stringstream ss;
+    // std::for_each(it->second.begin(), it->second.end(), [&ss](const std::string &str){
+    //   ss << str << "; ";
+    // });
+    // VLOG(1) << it->first << ", " << ss.str() << ", "
+    //         << out->name2hitid[it->first];
   }
 
   return out;

@@ -39,7 +39,7 @@ std::shared_ptr<RecOutput> RecognizeCore::Process(
 
   auto out = std::make_shared<RecOutput>();
   out->names.assign(in->names.begin(), in->names.end());
-  out->box_num.assign(in->box_num.begin(), in->box_num.end());
+  out->boxnum.assign(in->boxnum.begin(), in->boxnum.end());
   out->boxes.assign(in->boxes.begin(), in->boxes.end());
 
   std::vector<std::unique_ptr<std::thread>> threads;

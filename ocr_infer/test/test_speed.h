@@ -121,7 +121,7 @@ class TestSpeed {
 
   // print intermediate results
   void MatAndPrintResultProcess(std::shared_ptr<MatchOutput> res) {
-    for (auto it = res->name2box_num.begin(); it != res->name2box_num.end();
+    for (auto it = res->name2boxnum.begin(); it != res->name2boxnum.end();
          it++) {
       std::string name = it->first;
       std::string file =
@@ -149,6 +149,7 @@ class TestSpeed {
       // }
 
       // 完整地保存识别结果，方便准确测试
+      // TODO: 考虑一下是否新增收集结果的节点
       if (saved_num_.find(name) == saved_num_.end()) {
         std::ofstream ofs(file.c_str());
         if (!ofs.is_open()) {
@@ -159,11 +160,17 @@ class TestSpeed {
         ofs << ss.rdbuf();
         ofs.close();
         saved_num_.insert({name, res->name2text[name].size()});
+        if (res->name2text[name].size() < it->second) {
+          std::cout << "****** " << name << ", " << res->name2text[name].size() << ", "
+                  << it->second << ", " << ss.str() << std::endl;
+        }
       } else if (saved_num_[name] < it->second) {
         std::ofstream ofs(file.c_str(), ios::app);
         ofs << ss.rdbuf();
         ofs.close();
         saved_num_[name] += res->name2text[name].size();
+        std::cout << "****** " << name << ", " << res->name2text[name].size() << ", "
+                  << it->second << ", " << ss.str() << std::endl;
       }
     }
   }

@@ -19,7 +19,7 @@ std::shared_ptr<RecInput> ClipCore::Process(const std::shared_ptr<DetBox> &in) {
             this->GetRotateCropImage(in->images[i], bb, rec_input_size_);
         out->clips.emplace_back(clip);
         out->names.emplace_back(in->names[i]);
-        out->box_num.emplace_back(in->boxes[i].size());
+        out->boxnum.emplace_back(in->boxes[i].size());
         out->boxes.emplace_back(bb);
       } catch (std::exception &e) {
         LOG(WARNING) << "An exception occurred when cropping " << in->names[i];

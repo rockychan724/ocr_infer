@@ -16,7 +16,7 @@ void BufferCore::Process(const std::shared_ptr<RecInput> &in,
   for (int i = 0; i < in->clips.size(); i++) {
     buffer_clips_.push(in->clips[i]);  // TODO: 存在拷贝，考虑使用引用 or 指针
     buffer_names_.push(in->names[i]);
-    buffer_box_num_.push(in->box_num[i]);
+    buffer_boxnum_.push(in->boxnum[i]);
     buffer_boxes_.push(in->boxes[i]);
   }
   while (buffer_clips_.size() > rec_batch_size_) {
@@ -24,11 +24,11 @@ void BufferCore::Process(const std::shared_ptr<RecInput> &in,
     for (int j = 0; j < rec_batch_size_; j++) {
       out->clips.emplace_back(Preprocess(buffer_clips_.front()));
       out->names.emplace_back(buffer_names_.front());
-      out->box_num.emplace_back(buffer_box_num_.front());
+      out->boxnum.emplace_back(buffer_boxnum_.front());
       out->boxes.emplace_back(buffer_boxes_.front());
       buffer_clips_.pop();
       buffer_names_.pop();
-      buffer_box_num_.pop();
+      buffer_boxnum_.pop();
       buffer_boxes_.pop();
     }
     out_v->emplace_back(out);

@@ -17,8 +17,10 @@ class DbPostprocessing {
 
  private:
   // TODO:
-  // 比较当前后处理模块和PaddleOCR后处理模块对精度的影响；
-  // 发现thresh和box_thresh参数对最终的结果影响较大
+  // 比较当前后处理模块和 PaddleOCR 后处理模块对精度的影响；
+  // 发现 thresh 和 box_thresh 参数对最终的结果影响较大。
+  // 当前参数是在复杂新闻数据上调参得到的最佳参数，
+  // 若在其他数据集上出现精度很低，可以调试 thresh 和 box_thresh 这两个参数
   float thresh = 0.1;      // 0.3;     // 0.1f;
   float box_thresh = 0.2;  // 0.5; // 0.2f;
   int max_candicates = 100;

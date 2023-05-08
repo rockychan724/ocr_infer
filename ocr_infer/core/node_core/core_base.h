@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "glog/logging.h"
+#include "ocr_infer/core/util/config_util.h"
 
 // TODO: 模板可以去掉
 template <typename IType, typename OType>
@@ -17,9 +17,7 @@ class CoreBase {
   static std::string Inquire(
       const std::unordered_map<std::string, std::string> &config,
       const std::string &key) {
-    auto it = config.find(key);
-    CHECK(it != config.end()) << "Can't find \"" << key << "\" in config!";
-    return it->second;
+    return Query(config, key);
   }
 };
 

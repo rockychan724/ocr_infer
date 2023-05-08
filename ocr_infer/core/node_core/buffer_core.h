@@ -14,7 +14,7 @@ class BufferCore : public BufferCoreBase<RecInput, RecInput> {
  private:
   std::queue<std::string> buffer_names_;
   std::queue<cv::Mat> buffer_clips_;
-  std::queue<int> buffer_box_num_;
+  std::queue<int> buffer_boxnum_;
   std::queue<cv::RotatedRect> buffer_boxes_;
   int rec_batch_size_;
 
