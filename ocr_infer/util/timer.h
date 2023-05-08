@@ -1,5 +1,5 @@
-#ifndef OCR_INFER_TEST_UTIL_TIMER_H_
-#define OCR_INFER_TEST_UTIL_TIMER_H_
+#ifndef OCR_INFER_UTIL_TIMER_H_
+#define OCR_INFER_UTIL_TIMER_H_
 
 #include <ctime>
 
@@ -24,4 +24,4 @@ class Timer {
   }
 };
 
-#endif  // OCR_INFER_TEST_UTIL_TIMER_H_
+#endif  // OCR_INFER_UTIL_TIMER_H_

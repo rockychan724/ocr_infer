@@ -1,5 +1,5 @@
-#ifndef OCR_INFER_TEST_UTIL_READ_CONFIG_H_
-#define OCR_INFER_TEST_UTIL_READ_CONFIG_H_
+#ifndef OCR_INFER_UTIL_READ_CONFIG_H_
+#define OCR_INFER_UTIL_READ_CONFIG_H_
 
 #include <fstream>
 #include <string>
@@ -7,12 +7,12 @@
 
 using namespace std;
 
-bool IsSpace(char c) {
+static bool IsSpace(char c) {
   if (' ' == c || '\t' == c) return true;
   return false;
 }
 
-bool IsCommentChar(char c) {
+static bool IsCommentChar(char c) {
   switch (c) {
     case ';':
       return true;
@@ -21,7 +21,7 @@ bool IsCommentChar(char c) {
   }
 }
 
-void Trim(string &str) {
+static void Trim(string &str) {
   if (str.empty()) return;
   int i, start_pos, end_pos;
   for (i = 0; i < str.size(); i++) {
@@ -39,7 +39,7 @@ void Trim(string &str) {
   str = str.substr(start_pos, end_pos - start_pos + 1);
 }
 
-bool AnalyseLine(const string &line, string &section, string &key,
+static bool AnalyseLine(const string &line, string &section, string &key,
                  string &value) {
   if (line.empty()) return false;
   int start_pos = 0, end_pos = line.size() - 1, pos, s_startpos, s_endpos;
@@ -64,7 +64,7 @@ bool AnalyseLine(const string &line, string &section, string &key,
   return true;
 }
 
-bool read_config(const string &config_file, const string &section,
+static bool read_config(const string &config_file, const string &section,
                  unordered_map<string, string> &config_map) {
   ifstream infile(config_file.c_str());
   if (!infile) return false;
@@ -94,4 +94,4 @@ bool read_config(const string &config_file, const string &section,
   return true;
 }
 
-#endif  // OCR_INFER_TEST_UTIL_READ_CONFIG_H_
+#endif  // OCR_INFER_UTIL_READ_CONFIG_H_

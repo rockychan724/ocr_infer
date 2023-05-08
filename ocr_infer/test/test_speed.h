@@ -2,13 +2,13 @@
 #define OCR_INFER_TEST_TEST_SPEED_H_
 
 #include <algorithm>
-#include <random>
 #include <thread>
 
 #include "ocr_infer/core/pipeline/pipeline.h"
-#include "ocr_infer/test/util/read_config.h"
-#include "ocr_infer/test/util/syscall.h"
-#include "ocr_infer/test/util/timer.h"
+#include "ocr_infer/util/image_util.h"
+#include "ocr_infer/util/read_config.h"
+#include "ocr_infer/util/syscall.h"
+#include "ocr_infer/util/timer.h"
 
 class TestSpeed {
  public:
@@ -128,8 +128,8 @@ class TestSpeed {
           "/home/chenlei/Documents/cnc/rec_output/" + name + ".txt";
       std::stringstream ss;
       std::cout << name << " has " << it->second << " CiTiaos:" << std::endl;
-      size_t result_num = res->name2text[name].size();
-      for (size_t i = 0; i < result_num; i++) {
+      size_t text_num = res->name2text[name].size();
+      for (size_t i = 0; i < text_num; i++) {
         std::string text = res->name2text[name][i];
         cv::RotatedRect box = res->name2boxes[name][i];
         cv::Point2f vertices2f[4];
@@ -160,6 +160,7 @@ class TestSpeed {
         ofs << ss.rdbuf();
         ofs.close();
         saved_num_.insert({name, res->name2text[name].size()});
+        // TODO: to be removed
         if (res->name2text[name].size() < it->second) {
           std::cout << "****** " << name << ", " << res->name2text[name].size() << ", "
                   << it->second << ", " << ss.str() << std::endl;
@@ -169,36 +170,11 @@ class TestSpeed {
         ofs << ss.rdbuf();
         ofs.close();
         saved_num_[name] += res->name2text[name].size();
+        // TODO: to be removed
         std::cout << "****** " << name << ", " << res->name2text[name].size() << ", "
                   << it->second << ", " << ss.str() << std::endl;
       }
     }
-  }
-
-  size_t ReadImages(const string &images_path, std::vector<cv::Mat> &images,
-                    std::vector<std::string> &names) {
-    LOG(INFO) << "Begin reading images.";
-    std::vector<cv::String> files;
-    cv::glob(images_path + "/*.jpg", files, false);
-    std::shuffle(files.begin(), files.end(), std::default_random_engine(9));
-    size_t count = files.size();
-    for (size_t i = 0; i < count; i++) {
-      cv::Mat img = cv::imread(files[i], cv::IMREAD_COLOR);
-      images.emplace_back(img);
-    }
-    names = GetFileName(files);
-    printf("\nThere are %lu images\n\n", count);
-    return count;
-  }
-
-  std::vector<std::string> GetFileName(const std::vector<std::string> &files) {
-    std::vector<std::string> names;
-    for (const auto &file : files) {
-      int index1 = file.find_last_of("/");
-      int index2 = file.find_last_of(".");
-      names.emplace_back(file.substr(index1 + 1, index2 - index1 - 1));
-    }
-    return names;
   }
 };
 

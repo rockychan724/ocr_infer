@@ -4,7 +4,6 @@ add_library(
   detect/db_pp.cc
   recognize/crnn.cc
 )
-
 target_link_libraries(
   model
   clipper

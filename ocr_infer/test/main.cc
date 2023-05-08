@@ -4,7 +4,7 @@
 
 #include "glog/logging.h"
 #include "ocr_infer/test/test_speed.h"
-#include "ocr_infer/test/util/syscall.h"
+#include "ocr_infer/util/syscall.h"
 
 void PrintUsage(const char* program) {
   std::cout << "Usage: " << program << "CONFIG_FILE_PATH TEST_DATA_DIR\n";
