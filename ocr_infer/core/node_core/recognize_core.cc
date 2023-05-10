@@ -37,6 +37,11 @@ std::shared_ptr<RecOutput> RecognizeCore::Process(
     return {};
   }
 
+  // preprocess before recognize inference
+  for (int i = 0; i < in->clips.size(); i++) {
+    in->clips[i] = Preprocess(in->clips[i]);
+  }
+
   auto out = std::make_shared<RecOutput>();
   out->names.assign(in->names.begin(), in->names.end());
   out->boxnum.assign(in->boxnum.begin(), in->boxnum.end());
@@ -66,4 +71,17 @@ std::shared_ptr<RecOutput> RecognizeCore::Process(
 
   VLOG(1) << "*** Recognize node, out size = " << out->text.size();
   return out;
+}
+
+cv::Mat RecognizeCore::Preprocess(const cv::Mat &input_image) {
+  cv::Mat im_to_use;
+  if (input_image.channels() == 3) {
+    cvtColor(input_image, im_to_use, cv::COLOR_BGR2GRAY);
+  } else {
+    im_to_use = input_image.clone();
+  }
+  if (im_to_use.depth() != CV_32FC1) {
+    im_to_use.convertTo(im_to_use, CV_32FC1);
+  }
+  return im_to_use;
 }

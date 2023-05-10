@@ -15,6 +15,7 @@ typedef std::pair<std::shared_ptr<QueueSender<RecInput>>,
                   std::shared_ptr<QueueReceiver<MatchOutput>>>
     RecInOutPair;
 
+// parallel pipeline
 class PipelineFactory {
  public:
   static E2eInOutPair BuildE2e(const Config &config);

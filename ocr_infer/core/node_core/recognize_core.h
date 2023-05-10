@@ -15,6 +15,8 @@ class RecognizeCore : public NodeCoreBase<RecInput, RecOutput> {
  private:
   int recognizer_num_;
   std::vector<std::unique_ptr<Crnn>> recognizer_;
+
+  cv::Mat Preprocess(const cv::Mat &input_image);
 };
 
 #endif  // OCR_INFER_CORE_NODE_CORE_RECOGNIZE_CORE_H_

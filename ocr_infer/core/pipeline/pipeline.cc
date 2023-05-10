@@ -43,6 +43,7 @@ class PipelineE2e {
   Node<RecOutput, MatchOutput, MatchCore> match_node_;
 };
 
+// 考虑垃圾回收
 E2eInOutPair PipelineFactory::BuildE2e(const Config &config) {
   // std::shared_ptr<PipelineE2e> pipeline =
   // std::make_shared<PipelineE2e>(config);

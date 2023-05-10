@@ -22,7 +22,8 @@ void BufferCore::Process(const std::shared_ptr<RecInput> &in,
   while (buffer_clips_.size() > rec_batch_size_) {
     auto out = std::make_shared<RecInput>();
     for (int j = 0; j < rec_batch_size_; j++) {
-      out->clips.emplace_back(Preprocess(buffer_clips_.front()));
+      // out->clips.emplace_back(Preprocess(buffer_clips_.front()));
+      out->clips.emplace_back(buffer_clips_.front());
       out->names.emplace_back(buffer_names_.front());
       out->boxnum.emplace_back(buffer_boxnum_.front());
       out->boxes.emplace_back(buffer_boxes_.front());
@@ -36,16 +37,16 @@ void BufferCore::Process(const std::shared_ptr<RecInput> &in,
   VLOG(1) << "*** Buffer node, out_v size = " << out_v->size();
 }
 
-// TODO: 考虑将预处理放入识别节点，让 buffer 节点的功能更简单一点
-cv::Mat BufferCore::Preprocess(const cv::Mat &input_image) {
-  cv::Mat im_to_use;
-  if (input_image.channels() == 3) {
-    cvtColor(input_image, im_to_use, cv::COLOR_BGR2GRAY);
-  } else {
-    im_to_use = input_image.clone();
-  }
-  if (im_to_use.depth() != CV_32FC1) {
-    im_to_use.convertTo(im_to_use, CV_32FC1);
-  }
-  return im_to_use;
-}
+// // TODO: 考虑将预处理放入识别节点，让 buffer 节点的功能更简单一点
+// cv::Mat BufferCore::Preprocess(const cv::Mat &input_image) {
+//   cv::Mat im_to_use;
+//   if (input_image.channels() == 3) {
+//     cvtColor(input_image, im_to_use, cv::COLOR_BGR2GRAY);
+//   } else {
+//     im_to_use = input_image.clone();
+//   }
+//   if (im_to_use.depth() != CV_32FC1) {
+//     im_to_use.convertTo(im_to_use, CV_32FC1);
+//   }
+//   return im_to_use;
+// }

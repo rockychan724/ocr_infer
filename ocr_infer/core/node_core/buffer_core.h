@@ -18,7 +18,7 @@ class BufferCore : public BufferCoreBase<RecInput, RecInput> {
   std::queue<cv::RotatedRect> buffer_boxes_;
   int rec_batch_size_;
 
-  cv::Mat Preprocess(const cv::Mat &input_image);
+  // cv::Mat Preprocess(const cv::Mat &input_image);
 };
 
 #endif  // OCR_INFER_CORE_NODE_CORE_BUFFER_CORE_H_

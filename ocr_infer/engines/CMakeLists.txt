@@ -10,3 +10,10 @@ target_link_libraries(
   engines
   -lgtest -lgtest_main
 )
+
+add_executable(test_serial_engine serial_engine_test.cc)
+target_link_libraries(
+  test_serial_engine
+  engines
+  -lgtest -lgtest_main
+)
