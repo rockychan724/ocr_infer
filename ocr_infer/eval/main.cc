@@ -2,9 +2,8 @@
 #include <string>
 #include <unordered_map>
 
-#include "glog/logging.h"
-#include "ocr_infer/test/test_speed.h"
-#include "ocr_infer/util/syscall.h"
+#include "ocr_infer/eval/test_speed.h"
+#include "ocr_infer/util/init.h"
 
 void PrintUsage(const char* program) {
   std::cout << "Usage: " << program << "CONFIG_FILE_PATH TEST_DATA_DIR\n";
@@ -14,17 +13,9 @@ void PrintUsage(const char* program) {
 // 1. 程序异常检测
 // 2. 启动参数
 int main(int argc, char** argv) {
-  google::InitGoogleLogging(argv[0]);
-  std::string log_dir = "log";
-  FLAGS_log_dir = log_dir;
-
-  if (Access(log_dir.c_str(), 0) == -1) {
-    if (Mkdir(log_dir.c_str(), 0775) == -1) {
-      std::stringstream ss;
-      ss << "mkdir: can't mkdir named \"" << log_dir << "\"";
-      perror(ss.str().c_str());
-      return -1;
-    }
+  int init_res = InitLog(argv[0]);
+  if (init_res != 0) {
+    return init_res;
   }
 
   std::string config_path, test_data_dir;

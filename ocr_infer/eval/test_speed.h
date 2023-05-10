@@ -1,5 +1,5 @@
-#ifndef OCR_INFER_TEST_TEST_SPEED_H_
-#define OCR_INFER_TEST_TEST_SPEED_H_
+#ifndef OCR_INFER_EVAL_TEST_SPEED_H_
+#define OCR_INFER_EVAL_TEST_SPEED_H_
 
 #include <algorithm>
 #include <thread>
@@ -178,4 +178,4 @@ class TestSpeed {
   }
 };
 
-#endif  // OCR_INFER_TEST_TEST_SPEED_H_
+#endif  // OCR_INFER_EVAL_TEST_SPEED_H_

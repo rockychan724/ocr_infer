@@ -1,1 +1,1 @@
-There is `libocrinfer.so` in this directory;
+There is `libocr_infer.so` in this directory;

@@ -1,4 +1,4 @@
-#include "ocr_infer/ocr_api.h"
+#include "ocr_api.h"
 
 #include <iostream>
 

@@ -16,7 +16,7 @@ class SerialEngine {
 
   int Run(const std::string &image_dir);
 
-  int Run(const Input &in);
+  std::string Run(const std::shared_ptr<Input> &in);
 
  private:
   std::unique_ptr<SerialE2ePipeline> serial_e2e_pipeline_;
@@ -26,7 +26,7 @@ class SerialEngine {
   CallbackFunc callback_func_;
   void *other_;
 
-  void Print(const std::shared_ptr<MatchOutput> &match_result);
+  std::string Print(const std::shared_ptr<MatchOutput> &match_result, bool execute_callback_func=false);
 };
 
 #endif  // OCR_INFER_ENGINES_SERIAL_ENGINE_H_

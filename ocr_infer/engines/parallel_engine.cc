@@ -4,6 +4,7 @@
 #include "ocr_infer/core/pipeline/pipeline.h"
 #include "ocr_infer/core/util/config_util.h"
 #include "ocr_infer/util/image_util.h"
+#include "ocr_infer/util/init.h"
 #include "ocr_infer/util/read_config.h"
 #include "ocr_infer/util/timer.h"
 
@@ -36,7 +37,7 @@ int ParallelEngine::Init(const std::string& config_file,
 
   consumer_ = std::make_shared<std::thread>([this]() { Consume(); });
 
-  return 0;
+  return InitLog("ocr_infer");
 }
 
 int ParallelEngine::Run(const std::string& image_dir) {
@@ -94,8 +95,6 @@ int ParallelEngine::Run(const std::string& image_dir) {
   }
   return 0;
 }
-
-int ParallelEngine::Run(const Input& in) { return 0; }
 
 void ParallelEngine::Consume() {
   while (!stop_consume_) {

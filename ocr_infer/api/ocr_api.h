@@ -5,7 +5,7 @@
 #include <string>
 #include <memory>
 
-// #include "ocr_infer/api/data_type.h"
+#include "ocr_infer/api/data_type.h"
 
 typedef std::function<void(const std::string &, void *)> CallbackFunc;
 
@@ -15,11 +15,11 @@ class OcrInfer {
 
   int Run(const std::string &image_dir);
 
+  // Only for serial engine
+  std::string Run(const std::shared_ptr<Input> &in);
+
  private:
   std::shared_ptr<void> ocr_handle_;
-
-  // // TODO:
-  // int Run(const Input &in);
 };
 
 #endif  // OCR_INFER_API_OCR_API_H_

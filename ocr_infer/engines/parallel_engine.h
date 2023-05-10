@@ -21,8 +21,6 @@ class ParallelEngine {
 
   int Run(const std::string &image_dir);
 
-  int Run(const Input &in);
-
  private:
   std::shared_ptr<QueueSender<DetInput>> sender_;
   std::shared_ptr<QueueReceiver<MatchOutput>> receiver_;
