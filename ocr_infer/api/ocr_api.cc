@@ -2,16 +2,18 @@
 
 #include "glog/logging.h"
 #include "ocr_infer/engines/parallel_engine.h"
+#include "ocr_api.h"
 
 void check_license() {
   // TODO: 检查时间戳
 }
 
-OcrInfer::OcrInfer(const std::string& config_file, void* callback_func) {
+int OcrInfer::Init(const std::string& config_file, CallbackFunc callback_func, void *other) {
   check_license();
   auto runtime_ptr = std::make_shared<ParallelEngine>();
-  CHECK(runtime_ptr->Init(config_file, callback_func) == 0) << "Init failed!";
+  CHECK(runtime_ptr->Init(config_file, callback_func, other) == 0) << "Init failed!";
   ocr_handle_ = std::static_pointer_cast<void>(runtime_ptr);
+  return 0;
 }
 
 int OcrInfer::Run(const std::string& image_dir) {

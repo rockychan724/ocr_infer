@@ -1,6 +1,7 @@
 #ifndef OCR_INFER_ENGINES_PARALLEL_ENGINE_H_
 #define OCR_INFER_ENGINES_PARALLEL_ENGINE_H_
 
+#include <functional>
 #include <memory>
 #include <thread>
 
@@ -8,11 +9,11 @@
 #include "ocr_infer/core/common/data_structure.h"
 #include "ocr_infer/core/common/transmission.h"
 
-// typedef void (*func)(const std::string &str);  // 使用 c++ 的 function
+typedef std::function<void(const std::string &, void *)> CallbackFunc;
 
 class ParallelEngine {
  public:
-  int Init(const std::string &config_file, void *callback_func);
+  int Init(const std::string &config_file, CallbackFunc callback_func, void *other);
 
   int Run(const std::string &image_dir);
 
@@ -25,8 +26,9 @@ class ParallelEngine {
 
   int detect_batch_size_;
 
-  // func *callback_func_;
-  void (*callback_func_)(const std::string &str);
+  // void (*callback_func_)(const std::string &, void *);
+  CallbackFunc callback_func_;
+  void *other_;
 
   void GatherResult();
 };

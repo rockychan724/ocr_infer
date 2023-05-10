@@ -7,7 +7,7 @@
 #include "ocr_infer/util/read_config.h"
 #include "ocr_infer/util/timer.h"
 
-int ParallelEngine::Init(const std::string& config_file, void* callback_func) {
+int ParallelEngine::Init(const std::string& config_file, CallbackFunc callback_func, void *other) {
   std::unordered_map<std::string, std::string> config;
   CHECK(read_config(config_file, "configuration", config))
       << "Read \"config.ini\" failed!";
@@ -18,8 +18,9 @@ int ParallelEngine::Init(const std::string& config_file, void* callback_func) {
   sender_ = pipeline_io.first;
   receiver_ = pipeline_io.second;
 
-  // callback_func_ = static_cast<func*>(callback_func);
-  callback_func_ = (void (*)(const std::string&))callback_func;
+  // callback_func_ = (void (*)(const std::string&, void*))callback_func;
+  callback_func_ = callback_func;
+  other_ = other;
 
   consumer_ = std::make_shared<std::thread>([this]() { GatherResult(); });
 
@@ -114,8 +115,7 @@ void ParallelEngine::GatherResult() {
       //   std::cout << "\t" << *h << std::endl;
       // }
 
-      // (*callback_func_)(ss.str());
-      callback_func_(ss.str());
+      callback_func_(ss.str(), other_);
     }
   }
 }

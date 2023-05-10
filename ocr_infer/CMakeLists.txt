@@ -14,6 +14,7 @@ target_link_libraries(
 #   engines
 # )
 
+# TODO: 应当避免重复编译
 file(GLOB_RECURSE src_list ./*.cc ./*.cpp)
 add_library(ocrinfer SHARED ${src_list})
 target_link_libraries(
