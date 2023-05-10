@@ -13,6 +13,10 @@ typedef std::function<void(const std::string &, void *)> CallbackFunc;
 
 class ParallelEngine {
  public:
+  ParallelEngine();
+
+  ~ParallelEngine();
+
   int Init(const std::string &config_file, CallbackFunc callback_func, void *other);
 
   int Run(const std::string &image_dir);
@@ -23,6 +27,7 @@ class ParallelEngine {
   std::shared_ptr<QueueSender<DetInput>> sender_;
   std::shared_ptr<QueueReceiver<MatchOutput>> receiver_;
   std::shared_ptr<std::thread> consumer_;
+  bool stop_consume_;
 
   int detect_batch_size_;
 
@@ -30,7 +35,9 @@ class ParallelEngine {
   CallbackFunc callback_func_;
   void *other_;
 
-  void GatherResult();
+  void Consume();
+
+  void Print(const std::shared_ptr<MatchOutput> &match_result);
 };
 
 #endif  // OCR_INFER_ENGINES_PARALLEL_ENGINE_H_
