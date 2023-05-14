@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <thread>
+#include <unordered_set>
 
 #include "ocr_infer/core/pipeline/pipeline.h"
 #include "ocr_infer/util/image_util.h"
@@ -93,7 +94,7 @@ class TestSpeed {
   std::shared_ptr<QueueReceiver<MatchOutput>> receiver_;
   std::shared_ptr<std::thread> consumer_;
 
-  std::unordered_map<std::string, int> saved_num_;
+  std::unordered_set<std::string> save_file_;
 
   int detect_batch_size_;
 
@@ -121,36 +122,29 @@ class TestSpeed {
 
   // print intermediate results
   void MatAndPrintResultProcess(std::shared_ptr<MatchOutput> res) {
-    for (auto it = res->name2boxnum.begin(); it != res->name2boxnum.end();
-         it++) {
-      std::string name = it->first;
+    for (int i = 0; i < res->names.size(); i++) {
+      std::string name = res->names[i];
       std::string file =
           "/home/chenlei/Documents/cnc/rec_output/" + name + ".txt";
       std::stringstream ss;
-      std::cout << name << " has " << it->second << " CiTiaos:" << std::endl;
-      size_t text_num = res->name2text[name].size();
-      for (size_t i = 0; i < text_num; i++) {
-        std::string text = res->name2text[name][i];
-        cv::RotatedRect box = res->name2boxes[name][i];
+      int boxnum = res->boxnum[i];
+      std::cout << name << " has " << boxnum << " CiTiaos:" << std::endl;
+      for (int j = 0; j < boxnum; j++) {
+        std::string text = res->multitext[i][j];
+        cv::RotatedRect box = res->multiboxes[i][j];
         cv::Point2f vertices2f[4];
         box.points(vertices2f);
         cv::Point root_points[1][4];
-        for (int j = 0; j < 4; ++j) {
-          ss << int(vertices2f[j].x) << "," << int(vertices2f[j].y) << ",";
+        for (int k = 0; k < 4; k++) {
+          ss << int(vertices2f[k].x) << "," << int(vertices2f[k].y) << ",";
         }
         std::cout << "\t" << text << std::endl;
         ss << text << std::endl;
       }
-      std::cout << "*** hit id = " << res->name2hitid[name] << std::endl;
-      // std::vector<string> hit_content =
-      //     extern_interface.find_sensi_word(res->name2hitid[name]);
-      // for (auto h = hit_content.begin(); h != hit_content.end(); h++) {
-      //   std::cout << "\t" << *h << std::endl;
-      // }
+      std::cout << "*** hit id = " << res->hitid[i] << std::endl;
 
-      // 完整地保存识别结果，方便准确测试
-      // TODO: 考虑一下是否新增收集结果的节点
-      if (saved_num_.find(name) == saved_num_.end()) {
+      if (save_file_.find(name) == save_file_.end()) {
+        save_file_.insert(name);
         std::ofstream ofs(file.c_str());
         if (!ofs.is_open()) {
           std::cout << "Can't open output file! Please check file path."
@@ -159,20 +153,6 @@ class TestSpeed {
         }
         ofs << ss.rdbuf();
         ofs.close();
-        saved_num_.insert({name, res->name2text[name].size()});
-        // TODO: to be removed
-        if (res->name2text[name].size() < it->second) {
-          std::cout << "****** " << name << ", " << res->name2text[name].size() << ", "
-                  << it->second << ", " << ss.str() << std::endl;
-        }
-      } else if (saved_num_[name] < it->second) {
-        std::ofstream ofs(file.c_str(), ios::app);
-        ofs << ss.rdbuf();
-        ofs.close();
-        saved_num_[name] += res->name2text[name].size();
-        // TODO: to be removed
-        std::cout << "****** " << name << ", " << res->name2text[name].size() << ", "
-                  << it->second << ", " << ss.str() << std::endl;
       }
     }
   }

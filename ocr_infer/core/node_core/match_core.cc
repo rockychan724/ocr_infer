@@ -19,27 +19,11 @@ MatchCore::MatchCore(
 }
 
 std::shared_ptr<MatchOutput> MatchCore::Process(
-    const std::shared_ptr<RecOutput> &in) {
-  auto out = std::make_shared<MatchOutput>();
+    const std::shared_ptr<OcrOutput> &in) {
+  auto out = std::make_shared<MatchOutput>(*in.get());
 
   for (int i = 0; i < in->names.size(); i++) {
-    const std::string &key = in->names[i];
-    if (out->name2boxnum.find(key) == out->name2boxnum.end()) {
-      out->name2boxnum.insert({key, in->boxnum[i]});
-    }
-    out->name2text[key].emplace_back(in->text[i]);
-    out->name2boxes[key].emplace_back(in->boxes[i]);
-  }
-
-  for (auto it = out->name2text.begin(); it != out->name2text.end(); it++) {
-    out->name2hitid[it->first] = matcher_engine_->Match(it->second);
-    // // debug
-    // std::stringstream ss;
-    // std::for_each(it->second.begin(), it->second.end(), [&ss](const std::string &str){
-    //   ss << str << "; ";
-    // });
-    // VLOG(1) << it->first << ", " << ss.str() << ", "
-    //         << out->name2hitid[it->first];
+    out->hitid.emplace_back(matcher_engine_->Match(in->multitext[i]));
   }
 
   return out;

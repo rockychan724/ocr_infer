@@ -5,12 +5,12 @@
 #include "ocr_infer/core/match/matcher_engine.h"
 #include "ocr_infer/core/node_core/core_base.h"
 
-class MatchCore : public NodeCoreBase<RecOutput, MatchOutput> {
+class MatchCore : public NodeCoreBase<OcrOutput, MatchOutput> {
  public:
   MatchCore(const std::unordered_map<std::string, std::string> &config);
 
   std::shared_ptr<MatchOutput> Process(
-      const std::shared_ptr<RecOutput> &in) override;
+      const std::shared_ptr<OcrOutput> &in) override;
 
  private:
   std::unique_ptr<MatcherEngine> matcher_engine_;

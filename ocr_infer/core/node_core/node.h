@@ -8,6 +8,9 @@
 #include "ocr_infer/core/common/transmission.h"
 #include "ocr_infer/core/node_core/core_base.h"
 
+// TODO: Add namespace
+// namespace ocr_infer {
+
 template <typename IType, typename OType>
 class NodeBase {
  public:
@@ -23,14 +26,14 @@ class NodeBase {
     out_queue_ = out_queue;
     node_name_ = node_name;
     InitCore(config);
-    worker_ = std::make_shared<std::thread>([this]() { this->Run(); });
+    worker_ = std::make_unique<std::thread>([this]() { this->Run(); });
   }
 
  protected:
   std::string node_name_;
   std::shared_ptr<QueueReceiver<IType>> in_queue_;
   std::shared_ptr<QueueSender<OType>> out_queue_;
-  std::shared_ptr<std::thread> worker_;
+  std::unique_ptr<std::thread> worker_;
 
   virtual void InitCore(
       const std::unordered_map<std::string, std::string> &config) = 0;
@@ -79,5 +82,7 @@ class Buffer : public NodeBase<IType, OType> {
     }
   }
 };
+
+// }  // namespace ocr_infer
 
 #endif  // OCR_INFER_CORE_NODE_NODE_H_

@@ -62,7 +62,7 @@ std::shared_ptr<DetOutput> DetectCore::Process(
     std::vector<cv::Mat> sub_mat(in->images.begin() + i * one_batch,
                                  in->images.begin() + (i + 1) * one_batch);
     // 注意：由于 i 和 sub_mat 是 for
-    // 循环里的局部变量，出了作用于就没了，因此在多线程的 lambda
+    // 循环里的局部变量，出了作用域就没了，因此在多线程的 lambda
     // 表达式中不能以引用的形式传递 可以值传递或者添加参数来传递
     threads.emplace_back(
         std::make_unique<std::thread>([this, &output_result, i, sub_mat]() {

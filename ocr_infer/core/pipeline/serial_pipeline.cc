@@ -8,6 +8,7 @@ SerialE2ePipeline::SerialE2ePipeline(const Config &config) {
   clip_node_ = std::make_unique<ClipCore>(config);
   buffer_node_ = std::make_unique<BufferCore>(config);
   rec_node_ = std::make_unique<RecognizeCore>(config);
+  gather_node_ = std::make_unique<GatherCore>(config);
   match_node_ = std::make_unique<MatchCore>(config);
 
   rec_batch_size_ = std::stoi(Query(config, "reco_batch_size"));
@@ -40,17 +41,22 @@ std::shared_ptr<MatchOutput> SerialE2ePipeline::Run(
     begin_index = end_index;
 
     std::shared_ptr<RecOutput> rec_out = rec_node_->Process(rec_in);
-    std::shared_ptr<MatchOutput> match_out = match_node_->Process(rec_out);
+    std::shared_ptr<OcrOutput> gather_out = gather_node_->Process(rec_out);
+    std::shared_ptr<MatchOutput> match_out = match_node_->Process(gather_out);
 
     // gather match result
-    output->name2boxnum.insert(match_out->name2boxnum.begin(),
-                               match_out->name2boxnum.end());
-    output->name2text.insert(match_out->name2text.begin(),
-                             match_out->name2text.end());
-    output->name2boxes.insert(match_out->name2boxes.begin(),
-                              match_out->name2boxes.end());
-    output->name2hitid.insert(match_out->name2hitid.begin(),
-                              match_out->name2hitid.end());
+    output->names.insert(output->names.end(), match_out->names.begin(),
+                         match_out->names.end());
+    output->boxnum.insert(output->boxnum.end(), match_out->boxnum.begin(),
+                          match_out->boxnum.end());
+    output->multitext.insert(output->multitext.end(),
+                             match_out->multitext.begin(),
+                             match_out->multitext.end());
+    output->multiboxes.insert(output->multiboxes.end(),
+                              match_out->multiboxes.begin(),
+                              match_out->multiboxes.end());
+    output->hitid.insert(output->hitid.end(), match_out->hitid.begin(),
+                         match_out->hitid.end());
   }
 
   return output;

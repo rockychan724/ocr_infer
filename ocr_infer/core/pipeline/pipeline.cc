@@ -4,6 +4,7 @@
 #include "ocr_infer/core/node_core/clip_core.h"
 #include "ocr_infer/core/node_core/detect_core.h"
 #include "ocr_infer/core/node_core/detect_postprocessing_core.h"
+#include "ocr_infer/core/node_core/gather_core.h"
 #include "ocr_infer/core/node_core/match_core.h"
 #include "ocr_infer/core/node_core/node.h"
 #include "ocr_infer/core/node_core/recognize_core.h"
@@ -20,6 +21,7 @@ class PipelineE2e {
     auto rec_input_pair1 = QueueFactory<RecInput>::BuildQueue();
     auto rec_input_pair2 = QueueFactory<RecInput>::BuildQueue();
     auto rec_output_pair = QueueFactory<RecOutput>::BuildQueue();
+    auto ocr_output_pair = QueueFactory<OcrOutput>::BuildQueue();
     auto match_output_pair = QueueFactory<MatchOutput>::BuildQueue();
 
     e2e_sender_ = det_input_pair.first;
@@ -29,7 +31,9 @@ class PipelineE2e {
     buffer_node_.SetUp(config, rec_input_pair1.second, rec_input_pair2.first,
                        "");
     rec_node_.SetUp(config, rec_input_pair2.second, rec_output_pair.first, "");
-    match_node_.SetUp(config, rec_output_pair.second, match_output_pair.first,
+    gather_node_.SetUp(config, rec_output_pair.second, ocr_output_pair.first,
+                       "");
+    match_node_.SetUp(config, ocr_output_pair.second, match_output_pair.first,
                       "");
     e2e_receiver_ = match_output_pair.second;
   }
@@ -40,7 +44,8 @@ class PipelineE2e {
   Node<DetBox, RecInput, ClipCore> clip_node_;
   Buffer<RecInput, RecInput, BufferCore> buffer_node_;
   Node<RecInput, RecOutput, RecognizeCore> rec_node_;
-  Node<RecOutput, MatchOutput, MatchCore> match_node_;
+  Node<RecOutput, OcrOutput, GatherCore> gather_node_;
+  Node<OcrOutput, MatchOutput, MatchCore> match_node_;
 };
 
 // 考虑垃圾回收

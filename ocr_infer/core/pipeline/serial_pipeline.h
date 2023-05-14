@@ -7,6 +7,7 @@
 #include "ocr_infer/core/node_core/clip_core.h"
 #include "ocr_infer/core/node_core/detect_core.h"
 #include "ocr_infer/core/node_core/detect_postprocessing_core.h"
+#include "ocr_infer/core/node_core/gather_core.h"
 #include "ocr_infer/core/node_core/match_core.h"
 #include "ocr_infer/core/node_core/node.h"
 #include "ocr_infer/core/node_core/recognize_core.h"
@@ -26,6 +27,7 @@ class SerialE2ePipeline {
   std::unique_ptr<ClipCore> clip_node_;
   std::unique_ptr<BufferCore> buffer_node_;
   std::unique_ptr<RecognizeCore> rec_node_;
+  std::unique_ptr<GatherCore> gather_node_;
   std::unique_ptr<MatchCore> match_node_;
 
   int rec_batch_size_;

@@ -65,31 +65,25 @@ std::string SerialEngine::Print(
     const std::shared_ptr<MatchOutput>& match_result,
     bool execute_callback_func) {
   std::string out;
-  for (auto it = match_result->name2boxnum.begin();
-       it != match_result->name2boxnum.end(); it++) {
-    std::string name = it->first;
+  for (int i = 0; i < match_result->names.size(); i++) {
+    std::string name = match_result->names[i];
     std::stringstream ss;
     // std::cout << name << " has " << it->second << " CiTiaos:" << std::endl;
-    size_t text_num = match_result->name2text[name].size();
-    for (size_t i = 0; i < text_num; i++) {
-      std::string text = match_result->name2text[name][i];
-      cv::RotatedRect box = match_result->name2boxes[name][i];
+    int boxnum = match_result->boxnum[i];
+    for (int j = 0; j < boxnum; j++) {
+      std::string text = match_result->multitext[i][j];
+      cv::RotatedRect box = match_result->multiboxes[i][j];
       cv::Point2f vertices2f[4];
       box.points(vertices2f);
       cv::Point root_points[1][4];
-      for (int j = 0; j < 4; ++j) {
-        ss << int(vertices2f[j].x) << "," << int(vertices2f[j].y) << ",";
+      for (int k = 0; k < 4; k++) {
+        ss << int(vertices2f[k].x) << "," << int(vertices2f[k].y) << ",";
       }
       // std::cout << "\t" << text << std::endl;
       ss << text << std::endl;
     }
     // std::cout << "*** hit id = " << match_result->name2hitid[name]
     //           << std::endl;
-    // std::vector<string> hit_content =
-    //     extern_interface.find_sensi_word(match_result->name2hitid[name]);
-    // for (auto h = hit_content.begin(); h != hit_content.end(); h++) {
-    //   std::cout << "\t" << *h << std::endl;
-    // }
 
     out += ss.str();
     if (execute_callback_func) {
