@@ -57,6 +57,7 @@ int AcMatcher::BuildAcAutomation() {
       nodes_queue.push(iter->second);
     }
   }
+  return 0;
 }
 
 void AcMatcher::SetCaseSensibility(bool case_sensitive) {
