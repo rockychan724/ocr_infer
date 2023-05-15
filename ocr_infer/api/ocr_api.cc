@@ -4,7 +4,8 @@
 #include "ocr_infer/engines/parallel_engine.h"
 #include "ocr_infer/engines/serial_engine.h"
 
-typedef SerialEngine Engine;  // typedef ParallelEngine Engine;
+typedef ParallelEngine Engine;
+// typedef SerialEngine Engine;
 
 void check_license() {
   // TODO: 检查时间戳
@@ -25,6 +26,6 @@ int OcrInfer::Run(const std::string& image_dir) {
 
 // Only for serial engine
 std::string OcrInfer::Run(const std::shared_ptr<Input>& in) {
-  auto runtime_ptr = std::static_pointer_cast<Engine>(ocr_handle_);
-  return runtime_ptr->Run(in);
+  // auto runtime_ptr = std::static_pointer_cast<Engine>(ocr_handle_);
+  // return runtime_ptr->Run(in);
 }

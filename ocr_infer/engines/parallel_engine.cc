@@ -113,21 +113,22 @@ void ParallelEngine::Print(const std::shared_ptr<MatchOutput>& match_result) {
     std::stringstream ss;
     // std::cout << name << " has " << it->second << " CiTiaos:" << std::endl;
     int boxnum = match_result->boxnum[i];
+    cv::Mat img = images_[name].clone();
     for (int j = 0; j < boxnum; j++) {
       std::string text = match_result->multitext[i][j];
       cv::RotatedRect box = match_result->multiboxes[i][j];
       cv::Point2f vertices2f[4];
       box.points(vertices2f);
-      cv::Point root_points[1][4];
       for (int k = 0; k < 4; k++) {
         ss << int(vertices2f[k].x) << "," << int(vertices2f[k].y) << ",";
       }
       // std::cout << "\t" << text << std::endl;
       ss << text << std::endl;
+      DrawDetectBox(img, box, vertices2f);
     }
     // std::cout << "*** hit id = " << match_result->name2hitid[name]
     //           << std::endl;
 
-    callback_func_(ss.str(), other_);
+    callback_func_(ss.str(), img, other_);
   }
 }

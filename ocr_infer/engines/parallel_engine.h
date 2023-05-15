@@ -9,7 +9,7 @@
 #include "ocr_infer/core/common/data_structure.h"
 #include "ocr_infer/core/common/transmission.h"
 
-typedef std::function<void(const std::string &, void *)> CallbackFunc;
+typedef std::function<void(const std::string &, const cv::Mat &, void *)> CallbackFunc;
 
 class ParallelEngine {
  public:

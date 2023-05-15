@@ -137,9 +137,9 @@ class TestSpeed {
       std::string rec_output_path =
           "/home/chenlei/Documents/cnc/rec_output/" + name + ".txt";
       std::stringstream ss;
+
       int boxnum = res->boxnum[i];
       std::cout << name << " has " << boxnum << " CiTiaos:" << std::endl;
-
       cv::Mat img = images_[name].clone();
       for (int j = 0; j < boxnum; j++) {
         std::string text = res->multitext[i][j];

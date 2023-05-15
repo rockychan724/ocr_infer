@@ -8,7 +8,7 @@
 #include "ocr_infer/api/data_type.h"
 #include "ocr_infer/core/pipeline/serial_pipeline.h"
 
-typedef std::function<void(const std::string &, void *)> CallbackFunc;
+typedef std::function<void(const std::string &, const cv::Mat &, void *)> CallbackFunc;
 
 class SerialEngine {
  public:
