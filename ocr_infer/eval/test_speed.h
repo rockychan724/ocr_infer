@@ -6,6 +6,7 @@
 #include <unordered_set>
 
 #include "ocr_infer/core/pipeline/pipeline.h"
+#include "ocr_infer/core/util/config_util.h"
 #include "ocr_infer/util/image_util.h"
 #include "ocr_infer/util/read_config.h"
 #include "ocr_infer/util/syscall.h"
@@ -20,11 +21,7 @@ class TestSpeed {
       exit(1);
     }
 
-    auto it = config.find("detect_batch_size");
-    CHECK(it != config.end()) << "Can't find \""
-                              << "detect_batch_size"
-                              << "\" in config!";
-    detect_batch_size_ = std::stoi(it->second);
+    detect_batch_size_ = std::stoi(Query(config, "detect_batch_size"));
 
     auto pipeline_io = PipelineFactory::BuildE2e(config);
     sender_ = pipeline_io.first, receiver_ = pipeline_io.second;
@@ -33,19 +30,26 @@ class TestSpeed {
   }
 
   void Run(const std::string &test_data_dir) {
-    std::vector<cv::Mat> images;
+    saved_file_.clear();
+    images_.clear();
     std::vector<std::string> names;
-    size_t count = ReadImages(test_data_dir, images, names);
+
+    // Read images
+    LOG(INFO) << "Begin to read images.";
+    ReadImages(test_data_dir, names, images_);
+    int count = images_.size();
+    LOG(INFO) << "There are " << count << " images";
+
     int id = 0;
     double tick_fake_start = Timer::GetMillisecond();
     double tick_start, tick_end;
-    // int period = 10000;
-    int start_point = 5000, end_point = 10000, test_num = 10000;
+    int start_point = 4000, end_point = 9000, test_num = 10000;
     while (1) {
       auto input = std::make_shared<DetInput>();
       for (int j = 0; j < detect_batch_size_; j++) {
-        input->images.emplace_back(images[id % count]);
-        input->names.emplace_back(names[id % count]);
+        std::string name = names[id % count];
+        input->names.emplace_back(name);
+        input->images.emplace_back(images_[name]);
         id++;
       }
       sender_->push(input);
@@ -65,16 +69,14 @@ class TestSpeed {
         double diff = tick_end - tick_start;
         double average_time = diff / (id - start_point);
         double fps = 1.0e3 / average_time;
-        printf(
-            "\nTest frames = %d\nTotal time = %lf s\nAverage time per image = "
-            "%lf ms\nFPS = "
-            "%lf\n\n",
-            (id - start_point), diff / 1.0e3, average_time, fps);
+        std::stringstream ss;
+        ss << "Test frames = " << (id - start_point) << "\n"
+           << "Total time = " << diff / 1.0e3 << " s\n"
+           << "Average time per image = " << average_time << " ms/image\n"
+           << "FPS = " << fps << "\n";
+        std::cout << "\n" << ss.str() << "\n";
         ofstream ofs("./speed.txt");
-        ofs << "Test frames = " << (id - start_point)
-            << "\nTotal time = " << diff / 1.0e3
-            << " s\nAverage time per image = " << average_time
-            << " ms\nFPS = " << fps << "\n";
+        ofs << ss.rdbuf();
         ofs.close();
       } else if (id >= test_num) {
         break;
@@ -94,7 +96,8 @@ class TestSpeed {
   std::shared_ptr<QueueReceiver<MatchOutput>> receiver_;
   std::shared_ptr<std::thread> consumer_;
 
-  std::unordered_set<std::string> save_file_;
+  std::unordered_map<std::string, cv::Mat> images_;
+  std::unordered_set<std::string> saved_file_;
 
   int detect_batch_size_;
 
@@ -105,15 +108,20 @@ class TestSpeed {
   }
 
   void ConsumeAndMatch() {
-    std::string output_dir = "/home/chenlei/Documents/cnc/rec_output/";
-    if (Access(output_dir.c_str(), 0) == 0) {
-      std::string cmd = "rm -r " + output_dir;
-      system(cmd.c_str());
-    }
-    if (Mkdir(output_dir.c_str(), 0777) == -1) {
-      printf("Cannot make \"%s\"!\n", output_dir.c_str());
-      exit(1);
-    }
+    // TODO: add check directory util.
+    auto check_dir = [](const std::string &dir) {
+      if (Access(dir.c_str(), 0) == 0) {
+        std::string cmd = "rm -r " + dir;
+        system(cmd.c_str());
+      }
+      CHECK(Mkdir(dir.c_str(), 0777) == 0)
+          << "Can't create directory " << dir << " !\n";
+    };
+    std::string det_output_dir = "/home/chenlei/Documents/cnc/det_output/";
+    std::string rec_output_dir = "/home/chenlei/Documents/cnc/rec_output/";
+    check_dir(det_output_dir);
+    check_dir(rec_output_dir);
+
     while (1) {
       auto res = receiver_->pop();
       MatAndPrintResultProcess(res);
@@ -124,28 +132,36 @@ class TestSpeed {
   void MatAndPrintResultProcess(std::shared_ptr<MatchOutput> res) {
     for (int i = 0; i < res->names.size(); i++) {
       std::string name = res->names[i];
-      std::string file =
+      std::string det_output_path =
+          "/home/chenlei/Documents/cnc/det_output/" + name + ".jpg";
+      std::string rec_output_path =
           "/home/chenlei/Documents/cnc/rec_output/" + name + ".txt";
       std::stringstream ss;
       int boxnum = res->boxnum[i];
       std::cout << name << " has " << boxnum << " CiTiaos:" << std::endl;
+
+      cv::Mat img = images_[name].clone();
       for (int j = 0; j < boxnum; j++) {
         std::string text = res->multitext[i][j];
         cv::RotatedRect box = res->multiboxes[i][j];
         cv::Point2f vertices2f[4];
         box.points(vertices2f);
-        cv::Point root_points[1][4];
         for (int k = 0; k < 4; k++) {
           ss << int(vertices2f[k].x) << "," << int(vertices2f[k].y) << ",";
         }
         std::cout << "\t" << text << std::endl;
         ss << text << std::endl;
+
+        if (saved_file_.find(name) == saved_file_.end()) {
+          DrawDetectBox(img, box, vertices2f);
+          cv::imwrite(det_output_path, img);
+        }
       }
       std::cout << "*** hit id = " << res->hitid[i] << std::endl;
 
-      if (save_file_.find(name) == save_file_.end()) {
-        save_file_.insert(name);
-        std::ofstream ofs(file.c_str());
+      if (saved_file_.find(name) == saved_file_.end()) {
+        saved_file_.insert(name);
+        std::ofstream ofs(rec_output_path.c_str());
         if (!ofs.is_open()) {
           std::cout << "Can't open output file! Please check file path."
                     << std::endl;

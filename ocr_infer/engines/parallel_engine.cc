@@ -39,9 +39,15 @@ int ParallelEngine::Init(const std::string& config_file,
 }
 
 int ParallelEngine::Run(const std::string& image_dir) {
-  std::vector<cv::Mat> images;
+  images_.clear();
   std::vector<std::string> names;
-  size_t count = ReadImages(image_dir, images, names);
+
+  // Read images
+  LOG(INFO) << "Begin to read images.";
+  ReadImages(image_dir, names, images_);
+  int count = images_.size();
+  LOG(INFO) << "There are " << count << " images";
+
   int id = 0;
   double tick_fake_start = Timer::GetMillisecond();
   double tick_start, tick_end;
@@ -50,8 +56,9 @@ int ParallelEngine::Run(const std::string& image_dir) {
   while (1) {
     auto input = std::make_shared<DetInput>();
     for (int j = 0; j < detect_batch_size_; j++) {
-      input->images.emplace_back(images[id % count]);
-      input->names.emplace_back(names[id % count]);
+      std::string name = names[id % count];
+      input->names.emplace_back(name);
+      input->images.emplace_back(images_[name]);
       id++;
     }
     sender_->push(input);
@@ -70,16 +77,14 @@ int ParallelEngine::Run(const std::string& image_dir) {
       double diff = tick_end - tick_start;
       double average_time = diff / (id - start_point);
       double fps = 1.0e3 / average_time;
-      printf(
-          "\nTest frames = %d\nTotal time = %lf s\nAverage time per image = "
-          "%lf ms\nFPS = "
-          "%lf\n\n",
-          (id - start_point), diff / 1.0e3, average_time, fps);
+      std::stringstream ss;
+      ss << "Test frames = " << (id - start_point) << "\n"
+         << "Total time = " << diff / 1.0e3 << " s\n"
+         << "Average time per image = " << average_time << " ms/image\n"
+         << "FPS = " << fps << "\n";
+      std::cout << "\n" << ss.str() << "\n";
       ofstream ofs("./speed.txt");
-      ofs << "Test frames = " << (id - start_point)
-          << "\nTotal time = " << diff / 1.0e3
-          << " s\nAverage time per image = " << average_time
-          << " ms\nFPS = " << fps << "\n";
+      ofs << ss.rdbuf();
       ofs.close();
     } else if (id >= test_num) {
       break;

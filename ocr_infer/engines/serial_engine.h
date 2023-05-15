@@ -23,6 +23,8 @@ class SerialEngine {
 
   int detect_batch_size_;
 
+  std::unordered_map<std::string, cv::Mat> images_;
+
   CallbackFunc callback_func_;
   void *other_;
 

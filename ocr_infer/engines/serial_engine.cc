@@ -26,9 +26,14 @@ int SerialEngine::Init(const std::string& config_file,
 }
 
 int SerialEngine::Run(const std::string& image_dir) {
-  std::vector<cv::Mat> images;
+  images_.clear();
   std::vector<std::string> names;
-  size_t count = ReadImages(image_dir, images, names);
+
+  // Read images
+  LOG(INFO) << "Begin to read images.";
+  ReadImages(image_dir, names, images_);
+  int count = images_.size();
+  LOG(INFO) << "There are " << count << " images";
 
   int det_batch_num = std::ceil(double(count) / detect_batch_size_);
   int begin_index = 0;
@@ -37,10 +42,10 @@ int SerialEngine::Run(const std::string& image_dir) {
     int end_index = begin_index + detect_batch_size_ >= count
                         ? count
                         : begin_index + detect_batch_size_;
-    det_in->names.assign(names.begin() + begin_index,
-                         names.begin() + end_index);
-    det_in->images.assign(images.begin() + begin_index,
-                          images.begin() + end_index);
+    for (int j = begin_index; j < end_index; j++) {
+      det_in->names.emplace_back(names[j]);
+      det_in->images.emplace_back(images_[names[j]]);
+    }
     begin_index = end_index;
 
     std::shared_ptr<MatchOutput> match_out = serial_e2e_pipeline_->Run(det_in);

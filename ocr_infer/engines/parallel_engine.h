@@ -29,6 +29,8 @@ class ParallelEngine {
 
   int detect_batch_size_;
 
+  std::unordered_map<std::string, cv::Mat> images_;
+
   // void (*callback_func_)(const std::string &, void *);
   CallbackFunc callback_func_;
   void *other_;
