@@ -1,29 +1,28 @@
 #ifndef OCR_INFER_API_DATA_TYPE_H_
 #define OCR_INFER_API_DATA_TYPE_H_
 
+#include <functional>
 #include <string>
 #include <vector>
 
 #include "opencv2/opencv.hpp"
+
+typedef std::function<void(const std::string &, const cv::Mat &, void *)>
+    CallbackFunc;
 
 typedef int KeywordId;
 
 struct Input {
   std::vector<std::string> names;
   std::vector<cv::Mat> images;
-
-  Input() = default;
-
-  Input(std::vector<std::string> n, std::vector<cv::Mat> i)
-      : names(std::move(n)), images(std::move(i)) {}
 };
 
 struct Output {
-  std::unordered_map<std::string, int> name2boxnum;
-  std::unordered_map<std::string, std::vector<std::string>> name2text;
-  std::unordered_map<std::string, std::vector<cv::RotatedRect>> name2boxes;
-  // TODO: 考虑命中多个敏感词 KeywordId -> std::vector<KeywordId>
-  std::unordered_map<std::string, KeywordId> name2hitid;
+  std::vector<std::string> names;
+  std::vector<size_t> boxnum;
+  std::vector<std::vector<std::string>> multitext;
+  std::vector<std::vector<cv::RotatedRect>> multiboxes;
+  std::vector<KeywordId> hitid;
 };
 
 #endif  // OCR_INFER_API_DATA_TYPE_H_

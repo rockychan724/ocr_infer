@@ -24,8 +24,8 @@ int OcrInfer::Run(const std::string& image_dir) {
   return runtime_ptr->Run(image_dir);
 }
 
-// Only for serial engine
-std::string OcrInfer::Run(const std::shared_ptr<Input>& in) {
-  // auto runtime_ptr = std::static_pointer_cast<Engine>(ocr_handle_);
-  // return runtime_ptr->Run(in);
-}
+// // Only for serial engine
+// std::string OcrInfer::Run(const std::shared_ptr<Input>& in) {
+//   auto runtime_ptr = std::static_pointer_cast<Engine>(ocr_handle_);
+//   return runtime_ptr->Run(in);
+// }

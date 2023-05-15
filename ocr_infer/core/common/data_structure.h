@@ -59,12 +59,4 @@ struct MatchOutput : public OcrOutput {
   MatchOutput(const OcrOutput &ocr_output) : OcrOutput(ocr_output) {}
 };
 
-// struct MatchOutput {
-//   std::unordered_map<std::string, size_t> name2boxnum;
-//   std::unordered_map<std::string, std::vector<std::string>> name2text;
-//   std::unordered_map<std::string, std::vector<cv::RotatedRect>> name2boxes;
-//   // TODO: 考虑命中多个敏感词 KeywordId -> std::vector<KeywordId>
-//   std::unordered_map<std::string, KeywordId> name2hitid;
-// };
-
 #endif  // OCR_INFER_CORE_COMMON_DATA_STRUCTURE_H_

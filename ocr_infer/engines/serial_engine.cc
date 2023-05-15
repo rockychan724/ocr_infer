@@ -50,30 +50,28 @@ int SerialEngine::Run(const std::string& image_dir) {
 
     std::shared_ptr<MatchOutput> match_out = serial_e2e_pipeline_->Run(det_in);
 
-    Print(match_out, true);
+    Print(match_out, true, true);
   }
 
   return 0;
 }
 
-std::string SerialEngine::Run(const std::shared_ptr<Input>& in) {
-  std::shared_ptr<DetInput> det_in = std::make_shared<DetInput>();
-  det_in->names = in->names;
-  det_in->images = in->images;
+// std::string SerialEngine::Run(const std::shared_ptr<Input>& in) {
+//   std::shared_ptr<DetInput> det_in = std::make_shared<DetInput>();
+//   det_in->names = in->names;
+//   det_in->images = in->images;
 
-  std::shared_ptr<MatchOutput> match_result = serial_e2e_pipeline_->Run(det_in);
+//   std::shared_ptr<MatchOutput> match_result =
+//   serial_e2e_pipeline_->Run(det_in);
 
-  return Print(match_result);
-}
+//   return Print(match_result);
+// }
 
-std::string SerialEngine::Print(
-    const std::shared_ptr<MatchOutput>& match_result,
-    bool execute_callback_func) {
-  std::string out;
+void SerialEngine::Print(const std::shared_ptr<MatchOutput>& match_result,
+                         bool draw_detect_box, bool execute_callback_func) {
   for (int i = 0; i < match_result->names.size(); i++) {
     std::string name = match_result->names[i];
     std::stringstream ss;
-    // std::cout << name << " has " << it->second << " CiTiaos:" << std::endl;
     int boxnum = match_result->boxnum[i];
     cv::Mat img = images_[name].clone();
     for (int j = 0; j < boxnum; j++) {
@@ -81,21 +79,18 @@ std::string SerialEngine::Print(
       cv::RotatedRect box = match_result->multiboxes[i][j];
       cv::Point2f vertices2f[4];
       box.points(vertices2f);
+      cv::Point root_points[1][4];
       for (int k = 0; k < 4; k++) {
         ss << int(vertices2f[k].x) << "," << int(vertices2f[k].y) << ",";
       }
-      // std::cout << "\t" << text << std::endl;
       ss << text << std::endl;
-
-      DrawDetectBox(img, box, vertices2f);
+      if (draw_detect_box) {
+        DrawDetectBox(img, box, vertices2f);
+      }
     }
-    // std::cout << "*** hit id = " << match_result->name2hitid[name]
-    //           << std::endl;
 
-    out += ss.str();
     if (execute_callback_func) {
       callback_func_(ss.str(), img, other_);
     }
   }
-  return out;
 }

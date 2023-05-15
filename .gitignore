@@ -37,6 +37,7 @@
 build/
 cmake-build-*
 data/
+output/
 *.tar
 *.tar.gz
 *.tgz

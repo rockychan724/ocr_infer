@@ -6,6 +6,7 @@
 #include "ocr_infer/util/image_util.h"
 #include "ocr_infer/util/init.h"
 #include "ocr_infer/util/read_config.h"
+#include "ocr_infer/util/syscall.h"
 #include "ocr_infer/util/timer.h"
 
 ParallelEngine::ParallelEngine() : consumer_(nullptr) { stop_consume_ = false; }
@@ -18,27 +19,45 @@ ParallelEngine::~ParallelEngine() {
 }
 
 int ParallelEngine::Init(const std::string& config_file,
-                         CallbackFunc callback_func, void* other) {
+                         CallbackFunc callback_func, void* other,
+                         const std::string& output_dir) {
+  callback_func_ = callback_func;
+  other_ = other;
+  output_dir_ = output_dir;
+
   std::unordered_map<std::string, std::string> config;
   CHECK(read_config(config_file, "configuration", config))
       << "Read \"config.ini\" failed!";
 
-  detect_batch_size_ = std::stoi(Query(config, "detect_batch_size"));
+  // check directory
+  auto check_path = [](std::string& path) {
+    // check directory postfix
+    if (path.back() != '/') {
+      path += "/";
+    }
+    // mkdir
+    if (Access(path.c_str(), 0) == 0) {
+      std::string cmd = "rm -r " + path;
+      system(cmd.c_str());
+    }
+    CHECK(Mkdir(path.c_str(), 0777) == 0)
+        << "Can't create directory " << path << " !\n";
+  };
+  check_path(output_dir_);
 
   auto pipeline_io = PipelineFactory::BuildE2e(config);
   sender_ = pipeline_io.first;
   receiver_ = pipeline_io.second;
 
-  // callback_func_ = (void (*)(const std::string&, void*))callback_func;
-  callback_func_ = callback_func;
-  other_ = other;
+  detect_batch_size_ = std::stoi(Query(config, "detect_batch_size"));
 
-  consumer_ = std::make_shared<std::thread>([this]() { Consume(); });
+  consumer_ = std::make_unique<std::thread>([this]() { Consume(); });
 
   return InitLog("ocr_infer");
 }
 
-int ParallelEngine::Run(const std::string& image_dir) {
+int ParallelEngine::Run(const std::string& image_dir, int start_point,
+                        int end_point, int test_num) {
   images_.clear();
   std::vector<std::string> names;
 
@@ -49,10 +68,8 @@ int ParallelEngine::Run(const std::string& image_dir) {
   LOG(INFO) << "There are " << count << " images";
 
   int id = 0;
-  double tick_fake_start = Timer::GetMillisecond();
+  double tick_fake_start = Timer::GetMillisecond();  // debug
   double tick_start, tick_end;
-  // int period = 10000;
-  int start_point = 500, end_point = 1500, test_num = 2000;
   while (1) {
     auto input = std::make_shared<DetInput>();
     for (int j = 0; j < detect_batch_size_; j++) {
@@ -62,6 +79,7 @@ int ParallelEngine::Run(const std::string& image_dir) {
       id++;
     }
     sender_->push(input);
+    // debug
     // if (id % 160 == 0) {
     //   tick_end = Timer::GetMillisecond();
     //   double diff = tick_end - tick_fake_start;
@@ -83,14 +101,16 @@ int ParallelEngine::Run(const std::string& image_dir) {
          << "Average time per image = " << average_time << " ms/image\n"
          << "FPS = " << fps << "\n";
       std::cout << "\n" << ss.str() << "\n";
-      ofstream ofs("./speed.txt");
+
+      // save speed info to file
+      ofstream ofs(output_dir_ + "speed.txt");
       ofs << ss.rdbuf();
       ofs.close();
     } else if (id >= test_num) {
       break;
     }
   }
-  printf("Waiting 10 seconds for pipeline synchronization.\n");
+  printf("Waiting 20 seconds for pipeline synchronization.\n");
   fflush(stdout);
   for (int i = 0; i < 20; i++) {
     std::cout << "Run over!\n";
@@ -102,16 +122,15 @@ int ParallelEngine::Run(const std::string& image_dir) {
 void ParallelEngine::Consume() {
   while (!stop_consume_) {
     auto match_result = receiver_->pop();
-
-    Print(match_result);
+    Print(match_result, true, true);
   }
 }
 
-void ParallelEngine::Print(const std::shared_ptr<MatchOutput>& match_result) {
+void ParallelEngine::Print(const std::shared_ptr<MatchOutput>& match_result,
+                           bool draw_detect_box, bool execute_callback_func) {
   for (int i = 0; i < match_result->names.size(); i++) {
     std::string name = match_result->names[i];
     std::stringstream ss;
-    // std::cout << name << " has " << it->second << " CiTiaos:" << std::endl;
     int boxnum = match_result->boxnum[i];
     cv::Mat img = images_[name].clone();
     for (int j = 0; j < boxnum; j++) {
@@ -122,13 +141,14 @@ void ParallelEngine::Print(const std::shared_ptr<MatchOutput>& match_result) {
       for (int k = 0; k < 4; k++) {
         ss << int(vertices2f[k].x) << "," << int(vertices2f[k].y) << ",";
       }
-      // std::cout << "\t" << text << std::endl;
       ss << text << std::endl;
-      DrawDetectBox(img, box, vertices2f);
+      if (draw_detect_box) {
+        DrawDetectBox(img, box, vertices2f);
+      }
     }
-    // std::cout << "*** hit id = " << match_result->name2hitid[name]
-    //           << std::endl;
 
-    callback_func_(ss.str(), img, other_);
+    if (execute_callback_func) {
+      callback_func_(ss.str(), img, other_);
+    }
   }
 }
