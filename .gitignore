@@ -36,8 +36,12 @@
 .vscode/
 build/
 cmake-build-*
+__pycache__/
 data/
+testdata/
 output/
+inference_output*
+nvinfer
 *.tar
 *.tar.gz
 *.tgz
