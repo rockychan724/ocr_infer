@@ -10,7 +10,7 @@ TEST(TestEvalAcc, test_eval_acc) {
   std::string base_dir = "/home/chenlei/Documents/cnc/";
   std::string config_file = base_dir + "ocr_infer/data/config_cnc.ini";
   std::string image_dir = base_dir + "testdata/image/";
-  std::string output_dir = base_dir + "output";
+  std::string output_dir = base_dir + "ocr_infer/output";
 
   ASSERT_EQ(ea.Init(config_file, nullptr, nullptr, output_dir), 0);
   LOG(INFO) << "Begin to test speed, please wait...";
