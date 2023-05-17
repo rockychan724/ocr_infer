@@ -33,18 +33,29 @@ static void ReadImages(const std::string &images_path,
   }
 }
 
-static void DrawDetectBox(cv::Mat &image, const cv::RotatedRect &box, const cv::Point2f *vertices2f) {
+static void DrawDetectBox(cv::Mat &image, const cv::RotatedRect &box,
+                          const cv::Point2f *vertices2f, int index = -1) {
   // cv::Point2f vertices2f[4];
   // box.points(vertices2f);
   cv::Point root_points[1][4];
+
+  // debug
   for (int i = 0; i < 4; ++i) {
     root_points[0][i] = vertices2f[i];
     cv::putText(image, std::to_string(i), vertices2f[i], cv::FONT_HERSHEY_PLAIN,
-            1.0, cv::Scalar(0, 255, 0), 2);  // debug
+                1.0, cv::Scalar(0, 255, 0), 2);
   }
-  cv::putText(image, std::to_string(box.angle),
-          cv::Point(box.center.x + box.size.width / 2.0, box.center.y),
-          cv::FONT_HERSHEY_PLAIN, 1.0, cv::Scalar(0, 255, 0), 2);  // debug
+
+  // debug
+  if (index >= 0) {
+    std::stringstream box_info;
+    box_info << index << "," << int(box.size.width) << ","
+             << int(box.size.height) << "," << box.angle;
+    cv::putText(image, box_info.str(),
+                // cv::Point(box.center.x + box.size.width / 2.0, box.center.y),
+                cv::Point(vertices2f[2].x + 10, vertices2f[2].y),
+                cv::FONT_HERSHEY_PLAIN, 1.5, cv::Scalar(0, 0, 255), 2);
+  }
 
   // draw box
   const cv::Point *ppt[1] = {root_points[0]};

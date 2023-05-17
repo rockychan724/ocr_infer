@@ -2,29 +2,56 @@
 
 #include "glog/logging.h"
 
+#ifdef SAVE_CLIPS
+#include "ocr_infer/util/syscall.h"
+#endif
+
 ClipCore::ClipCore(const std::unordered_map<std::string, std::string> &config)
     : rec_input_size_(480, 48) {
   LOG(INFO) << "Clip node init...";
   LOG(INFO) << "Clip node init over!";
+#ifdef SAVE_CLIPS
+  save_dir_ = "/home/chenlei/Documents/cnc/ocr_infer/output/rec_input/";
+  if (Access(save_dir_.c_str(), 0) == 0) {
+    std::string cmd = "rm -r " + save_dir_;
+    system(cmd.c_str());
+  }
+  std::string mkdir_cmd = "mkdir -p " + save_dir_;
+  system(mkdir_cmd.c_str());
+  // CHECK(Mkdir(save_dir_.c_str(), 0777) == 0)
+  //     << "Can't create directory " << save_dir_ << " !\n";
+  ofs_det_info_.open(
+      "/home/chenlei/Documents/cnc/ocr_infer/output/det_box_info.txt");
+#endif
 }
 
 std::shared_ptr<RecInput> ClipCore::Process(const std::shared_ptr<DetBox> &in) {
   VLOG(1) << "*** Clip node, in size = " << in->images.size();
   auto out = std::make_shared<RecInput>();
   for (int i = 0; i < in->images.size(); i++) {
-    for (const auto &bb : in->boxes[i]) {
+    for (int j = 0; j < in->boxes[i].size(); j++) {
+      const auto &bb = in->boxes[i][j];
+      cv::Mat clip;
       try {
-        // TODO: Add old method
-        cv::Mat clip =
-            this->GetRotateCropImage(in->images[i], bb, rec_input_size_);
-        out->clips.emplace_back(clip);
-        out->names.emplace_back(in->names[i]);
-        out->boxnum.emplace_back(in->boxes[i].size());
-        out->boxes.emplace_back(bb);
+        clip = this->GetRotateCropImage(in->images[i], bb, rec_input_size_);
       } catch (std::exception &e) {
         LOG(WARNING) << "An exception occurred when cropping " << in->names[i];
         LOG(WARNING) << e.what();
+        continue;
       }
+      out->clips.emplace_back(clip);
+      out->names.emplace_back(in->names[i]);
+      out->boxnum.emplace_back(in->boxes[i].size());
+      out->boxes.emplace_back(bb);
+
+#ifdef SAVE_CLIPS
+      std::string save_path =
+          save_dir_ + in->names[i] + "_" + std::to_string(j) + ".jpg";
+      cv::imwrite(save_path, clip);
+
+      ofs_det_info_ << in->names[i] << "_" << j << ".jpg " << bb.size.width
+                    << "," << bb.size.height << " " << bb.angle << std::endl;
+#endif
     }
     VLOG(1) << "box num = " << in->boxes[i].size();
   }
@@ -35,14 +62,32 @@ std::shared_ptr<RecInput> ClipCore::Process(const std::shared_ptr<DetBox> &in) {
 cv::Mat ClipCore::GetRotateCropImage(const cv::Mat &src_image,
                                      const cv::RotatedRect &box,
                                      const cv::Size &s) {
-  // points[0]指的就是y值最大的坐标点，若最大的y值有两个，则左侧的（x较小的）为points[0]点，（坐标系原点在左上角，x轴水平向右，y轴竖直向下）。
-  // width边是x轴逆时针旋转最先平行的边。
-  // box的角度取值范围为[-90, 0]
+  /**
+   * OpenCV 坐标系：原点为左上角，x轴正向水平向右，y轴正向竖直向下
+   *
+   * 关于 cv::RotatedRect 类中的 points、angle、width 和 height 详解：
+   * https://blog.csdn.net/xueluowutong/article/details/86069814
+   *
+   * 在 DB 后处理之后得到的 box 具有如下特性：
+   * 1. 关于旋转矩形框的四个点：
+   *  (1) 如果没有对边与 y 轴平行，则 x 坐标最小的点为 points[0] 点；
+   *  (2) 如有有对边与 y 轴平行，则有两个 x
+   * 坐标最小的点，取下侧的点（即左下角的点）为 points[0] 点。
+   *  points[0]~points[3]按照顺时针依次取得
+   * 2. 关于旋转矩形框的宽和高：
+   *  points[0] 到 points[3] 之间的边为 width，另一条边为 height
+   * 3. 关于旋转矩形框的角度：
+   *  以穿过 points[0] 且平行于 x 轴的直线，从 x 轴负向开始顺指针旋转至
+   * points[0]points[3] 宽边，经过的 角度就是 angle，取值为 [0°,90°]
+   *
+   * 上述特性对横排文本和竖排文本都适用
+   */
+
   cv::Point2f points[4];
   box.points(points);
 
-  cv::Rect rect =
-      box.boundingRect();  // rect.x 和 rec.y 是外接矩形框左上点的x,y坐标
+  // rect.x 和 rec.y 是外接矩形框左上点的x,y坐标
+  cv::Rect rect = box.boundingRect();
 
   // 获取box的四个点在外界矩形中的相对坐标
   for (auto &point : points) {
@@ -86,22 +131,24 @@ cv::Mat ClipCore::GetRotateCropImage(const cv::Mat &src_image,
   float box_width;
   float box_height;
   cv::Point2f pts_std[4];
-  if (box.angle <
-      -45) {  // [-90, -45)
-              // 倾斜过大导致h和w的大小互换了，points[0]为box右下角的点
-    box_width = box.size.height;
-    box_height = box.size.width;
-    pts_std[0] = cv::Point2f(box_width, box_height);
-    pts_std[1] = cv::Point2f(0, box_height);
-    pts_std[2] = cv::Point2f(0, 0);
-    pts_std[3] = cv::Point2f(box_width, 0);
-  } else {  // [-45, 0]
+
+  // 0 <= angle <= 90
+  if (box.angle < 45) {  // 正常情况：第一个点在左下角
+    // 水平文本框和垂直文本框都是这么映射
     box_width = box.size.width;
     box_height = box.size.height;
     pts_std[0] = cv::Point2f(0, box_height);
     pts_std[1] = cv::Point2f(0, 0);
     pts_std[2] = cv::Point2f(box_width, 0);
     pts_std[3] = cv::Point2f(box_width, box_height);
+  } else {  // 异常情况：第一个点在左上角
+    // 水平文本框和垂直文本框都是这么映射
+    box_width = box.size.height;
+    box_height = box.size.width;
+    pts_std[0] = cv::Point2f(0, 0);
+    pts_std[1] = cv::Point2f(box_width, 0);
+    pts_std[2] = cv::Point2f(box_width, box_height);
+    pts_std[3] = cv::Point2f(0, box_height);
   }
 
   cv::Mat dst_img;

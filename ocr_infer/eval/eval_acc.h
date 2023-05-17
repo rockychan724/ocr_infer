@@ -54,7 +54,7 @@ class EvalAcc : public ParallelEngine {
         std::cout << "\t" << text << std::endl;
         ss << text << std::endl;
         if (draw_detect_box) {
-          DrawDetectBox(img, box, vertices2f);
+          DrawDetectBox(img, box, vertices2f, j);
         }
       }
       std::cout << "*** hit id = " << match_result->hitid[i] << std::endl;

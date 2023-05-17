@@ -7,6 +7,12 @@ endif()
 
 set(CMAKE_DEBUG_POSTFIX "_d")
 
+option(SAVE_CLIPS "Wether to save recognition input images." OFF)
+
+if(SAVE_CLIPS)
+    add_definitions(-DSAVE_CLIPS)
+endif()
+
 enable_testing()
 
 include_directories(

@@ -13,6 +13,5 @@ TEST(TestEvalAcc, test_eval_acc) {
   std::string output_dir = base_dir + "ocr_infer/output";
 
   ASSERT_EQ(ea.Init(config_file, nullptr, nullptr, output_dir), 0);
-  LOG(INFO) << "Begin to test speed, please wait...";
   ASSERT_EQ(ea.Run(image_dir, 500, 1500, 2000), 0);
 }
