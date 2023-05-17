@@ -1,11 +1,3 @@
-/* Copyright (C) [2019] by Cambricon, Inc. */
-/* offline_test */
-/*
- * A test which shows how to load and run an offline model.
- * This test consists of one operation --mlp.
- *
- */
-
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -146,9 +138,9 @@ int main(int argc, char **argv) {
   double average_time = total_infer_time / images.size();
   double fps = 1.0e3 / average_time;
   std::cout << "Test frames = " << images.size() << "\n"
-      << "Total time = " << average_time / 1.0e3 << " s\n"
-      << "Average time per image = " << average_time << " ms/image\n"
-      << "FPS = " << fps << "\n";
+            << "Total time = " << average_time / 1.0e3 << " s\n"
+            << "Average time per image = " << average_time << " ms/image\n"
+            << "FPS = " << fps << "\n";
 
   return 0;
 }

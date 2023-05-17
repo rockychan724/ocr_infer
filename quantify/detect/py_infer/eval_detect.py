@@ -134,7 +134,7 @@ def eval_detect(gt_dir, pred_dir):
     )
     char_acc = total_char_acc / total_gt_num
     print(f'Totally, \nDetect "precision": {precision}, "recall": {recall}, "f1": {f1}')
-    # print(f'End-to-End Recognize "char_acc": {char_acc}')  # not current
+    # print(f'End-to-End Recognize "char_acc": {char_acc}')  # not correct
 
 
 def rename():
