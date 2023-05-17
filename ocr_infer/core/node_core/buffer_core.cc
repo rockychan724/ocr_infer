@@ -5,7 +5,7 @@
 BufferCore::BufferCore(
     const std::unordered_map<std::string, std::string> &config) {
   LOG(INFO) << "Buffer node init...";
-  rec_batch_size_ = std::stoi(Inquire(config, "reco_batch_size"));
+  rec_batch_size_ = std::stoi(Inquire(config, "rec_batch_size"));
   LOG(INFO) << "rec_batch_size_ = " << rec_batch_size_;
   LOG(INFO) << "Buffer node init over!";
 }

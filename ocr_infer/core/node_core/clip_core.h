@@ -1,10 +1,13 @@
 #ifndef OCR_INFER_CORE_NODE_CORE_CLIP_CORE_H_
 #define OCR_INFER_CORE_NODE_CORE_CLIP_CORE_H_
 
+#include <filesystem>
 #include <fstream>
 
 #include "ocr_infer/core/common/data_structure.h"
 #include "ocr_infer/core/node_core/core_base.h"
+
+namespace fs = std::filesystem;
 
 class ClipCore : public NodeCoreBase<DetBox, RecInput> {
  public:
@@ -16,7 +19,7 @@ class ClipCore : public NodeCoreBase<DetBox, RecInput> {
   cv::Size rec_input_size_;
 
 #ifdef SAVE_CLIPS
-  std::string save_dir_;
+  fs::path save_dir_;
   std::ofstream ofs_det_info_;
 #endif
 

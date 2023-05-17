@@ -3,26 +3,27 @@
 #include <cmath>
 
 #include "glog/logging.h"
-#include "ocr_infer/core/util/config_util.h"
+#include "ocr_infer/util/config_util.h"
 #include "ocr_infer/util/image_util.h"
 #include "ocr_infer/util/init.h"
-#include "ocr_infer/util/read_config.h"
 #include "ocr_infer/util/timer.h"
 
 int SerialEngine::Init(const std::string& config_file,
                        CallbackFunc callback_func, void* other) {
   std::unordered_map<std::string, std::string> config;
-  CHECK(read_config(config_file, "configuration", config))
-      << "Read \"config.ini\" failed!";
+  CHECK(ReadConfig(config_file, "configuration", config))
+      << "Read config file failed!";
+
+  callback_func_ = callback_func;
+  other_ = other;
+
+  InitDirectory("ocr_infer", Query(config, "output_dir"));
 
   detect_batch_size_ = std::stoi(Query(config, "detect_batch_size"));
 
   serial_e2e_pipeline_ = std::make_unique<SerialE2ePipeline>(config);
 
-  callback_func_ = callback_func;
-  other_ = other;
-
-  return InitLog("ocr_infer");
+  return 0;
 }
 
 int SerialEngine::Run(const std::string& image_dir) {

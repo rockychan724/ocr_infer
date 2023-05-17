@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "ocr_infer/core/util/config_util.h"
+#include "ocr_infer/util/config_util.h"
 
 // TODO: 模板可以去掉
 template <typename IType, typename OType>

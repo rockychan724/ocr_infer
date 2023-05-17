@@ -14,12 +14,7 @@ DetectCore::DetectCore(
   LOG(INFO) << "detector_ = " << detector_num_
             << ", det_batch_size = " << det_batch_size;
 
-  std::string root_path = Inquire(config, "root_path");
-  if (root_path.back() != '/') {
-    root_path += "/";
-  }
-  std::string detect_model = Inquire(config, "detect_model");
-  std::string model_path = root_path + detect_model;
+  std::string model_path = Inquire(config, "detect_model");
 
   detector_.resize(detector_num_);
   for (int i = 0; i < detector_num_; i++) {

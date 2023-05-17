@@ -1,12 +1,15 @@
 #ifndef OCR_INFER_ENGINES_PARALLEL_ENGINE_H_
 #define OCR_INFER_ENGINES_PARALLEL_ENGINE_H_
 
+#include <filesystem>
 #include <memory>
 #include <thread>
 
 #include "ocr_infer/api/data_type.h"
 #include "ocr_infer/core/common/data_structure.h"
 #include "ocr_infer/core/common/transmission.h"
+
+namespace fs = std::filesystem;
 
 class ParallelEngine {
  public:
@@ -20,12 +23,10 @@ class ParallelEngine {
    * @param config_file
    * @param callback_func
    * @param other
-   * @param output_dir
    * @return int
    */
   virtual int Init(const std::string &config_file,
-                   CallbackFunc callback_func = nullptr, void *other = nullptr,
-                   const std::string &output_dir = "./output");
+                   CallbackFunc callback_func = nullptr, void *other = nullptr);
 
   /**
    * @brief
@@ -51,13 +52,13 @@ class ParallelEngine {
 
   CallbackFunc callback_func_;
   void *other_;
-  std::string output_dir_;
+  fs::path output_dir_;
 
   virtual void Consume();
 
   virtual void Print(const std::shared_ptr<MatchOutput> &match_result,
-                            bool draw_detect_box = false,
-                            bool execute_callback_func = false);
+                     bool draw_detect_box = false,
+                     bool execute_callback_func = false);
 };
 
 #endif  // OCR_INFER_ENGINES_PARALLEL_ENGINE_H_

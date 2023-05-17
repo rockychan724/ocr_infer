@@ -113,10 +113,13 @@ int MatcherEngine::DeleteKeyword(KeywordId rule_id, int flag) { return 0; }
  * 1. 一个关键词文件对应一个 rule，因此 rule id 是文件 id；
  * 2. keyword 是关键词文件中的每一行，因此 word id 是所有关键词的编码 id。
  */
-void MatcherEngine::ReadKeyword(const std::string &keyword_dir) {
+void MatcherEngine::ReadKeyword(std::string keyword_dir) {
   const std::wstring ANDPRE = L"#AND";
   const std::wstring ORPRE = L"#OR";
   const std::wstring NOTPRE = L"#NOT";
+  if (keyword_dir.back() != '/') {
+    keyword_dir += "/";
+  }
   std::vector<std::string> filename =
       GetFilesV1(keyword_dir, "txt", false, false);
   int word_id = 0;

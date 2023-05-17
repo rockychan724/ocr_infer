@@ -1,11 +1,19 @@
-#ifndef OCR_INFER_UTIL_READ_CONFIG_H_
-#define OCR_INFER_UTIL_READ_CONFIG_H_
+#ifndef OCR_INFER_UTIL_CONFIG_UTIL_H_
+#define OCR_INFER_UTIL_CONFIG_UTIL_H_
 
 #include <fstream>
 #include <string>
 #include <unordered_map>
 
-using namespace std;
+#include "glog/logging.h"
+
+static std::string Query(
+    const std::unordered_map<std::string, std::string> &config,
+    const std::string &key) {
+  auto it = config.find(key);
+  CHECK(it != config.end()) << "Can't find \"" << key << "\" in config!";
+  return it->second;
+}
 
 static bool IsSpace(char c) {
   if (' ' == c || '\t' == c) return true;
@@ -21,7 +29,7 @@ static bool IsCommentChar(char c) {
   }
 }
 
-static void Trim(string &str) {
+static void Trim(std::string &str) {
   if (str.empty()) return;
   int i, start_pos, end_pos;
   for (i = 0; i < str.size(); i++) {
@@ -39,8 +47,8 @@ static void Trim(string &str) {
   str = str.substr(start_pos, end_pos - start_pos + 1);
 }
 
-static bool AnalyseLine(const string &line, string &section, string &key,
-                 string &value) {
+static bool AnalyseLine(const std::string &line, std::string &section,
+                        std::string &key, std::string &value) {
   if (line.empty()) return false;
   int start_pos = 0, end_pos = line.size() - 1, pos, s_startpos, s_endpos;
   if ((pos = line.find(";")) != -1) {
@@ -52,7 +60,7 @@ static bool AnalyseLine(const string &line, string &section, string &key,
     section = line.substr(s_startpos + 1, s_endpos - 1);
     return true;
   }
-  string new_line = line.substr(start_pos, start_pos + 1 - end_pos);
+  std::string new_line = line.substr(start_pos, start_pos + 1 - end_pos);
   if ((pos = new_line.find('=')) == -1) return false;
   key = new_line.substr(0, pos);
   value = new_line.substr(pos + 1, end_pos + 1 - (pos + 1));
@@ -64,13 +72,15 @@ static bool AnalyseLine(const string &line, string &section, string &key,
   return true;
 }
 
-static bool read_config(const string &config_file, const string &section,
-                 unordered_map<string, string> &config_map) {
-  ifstream infile(config_file.c_str());
+static bool ReadConfig(
+    const std::string &config_file, const std::string &section,
+    std::unordered_map<std::string, std::string> &config_map) {
+  std::ifstream infile(config_file.c_str());
   if (!infile) return false;
-  string line, key, value, _section;
-  unordered_map<string, string> k_v;
-  unordered_map<string, unordered_map<string, string>> settings;
+  std::string line, key, value, _section;
+  std::unordered_map<std::string, std::string> k_v;
+  std::unordered_map<std::string, std::unordered_map<std::string, std::string>>
+      settings;
   while (getline(infile, line)) {
     if (AnalyseLine(line, _section, key, value)) {
       auto it = settings.find(_section);
@@ -94,4 +104,4 @@ static bool read_config(const string &config_file, const string &section,
   return true;
 }
 
-#endif  // OCR_INFER_UTIL_READ_CONFIG_H_
+#endif  // OCR_INFER_UTIL_CONFIG_UTIL_H_

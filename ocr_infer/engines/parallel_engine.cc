@@ -2,11 +2,9 @@
 
 #include "glog/logging.h"
 #include "ocr_infer/core/pipeline/pipeline.h"
-#include "ocr_infer/core/util/config_util.h"
+#include "ocr_infer/util/config_util.h"
 #include "ocr_infer/util/image_util.h"
 #include "ocr_infer/util/init.h"
-#include "ocr_infer/util/read_config.h"
-#include "ocr_infer/util/syscall.h"
 #include "ocr_infer/util/timer.h"
 
 ParallelEngine::ParallelEngine() : consumer_(nullptr) { stop_consume_ = false; }
@@ -19,31 +17,16 @@ ParallelEngine::~ParallelEngine() {
 }
 
 int ParallelEngine::Init(const std::string& config_file,
-                         CallbackFunc callback_func, void* other,
-                         const std::string& output_dir) {
+                         CallbackFunc callback_func, void* other) {
+  std::unordered_map<std::string, std::string> config;
+  CHECK(ReadConfig(config_file, "configuration", config))
+      << "Read config file failed!";
+
   callback_func_ = callback_func;
   other_ = other;
-  output_dir_ = output_dir;
+  output_dir_ = Query(config, "output_dir");
 
-  std::unordered_map<std::string, std::string> config;
-  CHECK(read_config(config_file, "configuration", config))
-      << "Read \"config.ini\" failed!";
-
-  // check directory
-  auto check_path = [](std::string& path) {
-    // check directory postfix
-    if (path.back() != '/') {
-      path += "/";
-    }
-    // mkdir
-    if (Access(path.c_str(), 0) == 0) {
-      std::string cmd = "rm -r " + path;
-      system(cmd.c_str());
-    }
-    CHECK(Mkdir(path.c_str(), 0777) == 0)
-        << "Can't create directory " << path << " !\n";
-  };
-  check_path(output_dir_);
+  InitDirectory("ocr_infer", output_dir_);
 
   auto pipeline_io = PipelineFactory::BuildE2e(config);
   sender_ = pipeline_io.first;
@@ -53,7 +36,7 @@ int ParallelEngine::Init(const std::string& config_file,
 
   consumer_ = std::make_unique<std::thread>([this]() { Consume(); });
 
-  return InitLog("ocr_infer");
+  return 0;
 }
 
 int ParallelEngine::Run(const std::string& image_dir, int start_point,
@@ -68,7 +51,6 @@ int ParallelEngine::Run(const std::string& image_dir, int start_point,
   LOG(INFO) << "There are " << count << " images";
 
   int id = 0;
-  double tick_fake_start = Timer::GetMillisecond();  // debug
   double tick_start, tick_end;
   while (1) {
     auto input = std::make_shared<DetInput>();
@@ -79,14 +61,6 @@ int ParallelEngine::Run(const std::string& image_dir, int start_point,
       id++;
     }
     sender_->push(input);
-    // debug
-    // if (id % 160 == 0) {
-    //   tick_end = Timer::GetMillisecond();
-    //   double diff = tick_end - tick_fake_start;
-    //   double rough_average_time = diff / (id - 0);
-    //   double rough_fps = 1.0e3 / rough_average_time;
-    //   cout << "id = " << id << ", rough_fps = " << rough_fps << endl;
-    // }
     if (id >= start_point && id < (start_point + detect_batch_size_)) {
       tick_start = Timer::GetMillisecond();
       start_point = id;
@@ -103,7 +77,8 @@ int ParallelEngine::Run(const std::string& image_dir, int start_point,
       std::cout << "\n" << ss.str() << "\n";
 
       // save speed info to file
-      ofstream ofs(output_dir_ + "speed.txt");
+      fs::path save_file = output_dir_ / "speed.txt";
+      std::ofstream ofs(save_file);
       ofs << ss.rdbuf();
       ofs.close();
     } else if (id >= test_num) {

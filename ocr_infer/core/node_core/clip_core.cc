@@ -2,26 +2,20 @@
 
 #include "glog/logging.h"
 
-#ifdef SAVE_CLIPS
-#include "ocr_infer/util/syscall.h"
-#endif
-
 ClipCore::ClipCore(const std::unordered_map<std::string, std::string> &config)
     : rec_input_size_(480, 48) {
   LOG(INFO) << "Clip node init...";
   LOG(INFO) << "Clip node init over!";
 #ifdef SAVE_CLIPS
-  save_dir_ = "/home/chenlei/Documents/cnc/ocr_infer/output/rec_input/";
-  if (Access(save_dir_.c_str(), 0) == 0) {
-    std::string cmd = "rm -r " + save_dir_;
-    system(cmd.c_str());
+  fs::path output_dir = Query(config, "output_dir");
+  save_dir_ = output_dir / "rec_input";
+  if (fs::exists(save_dir_)) {
+    CHECK(fs::remove_all(save_dir_)) << "Can't delete " << save_dir_;
   }
-  std::string mkdir_cmd = "mkdir -p " + save_dir_;
-  system(mkdir_cmd.c_str());
-  // CHECK(Mkdir(save_dir_.c_str(), 0777) == 0)
-  //     << "Can't create directory " << save_dir_ << " !\n";
-  ofs_det_info_.open(
-      "/home/chenlei/Documents/cnc/ocr_infer/output/det_box_info.txt");
+  CHECK(fs::create_directories(save_dir_)) << "Can't mkdir " << save_dir_;
+
+  fs::path box_info_file = output_dir / "det_box_info.txt";
+  ofs_det_info_.open(box_info_file);
 #endif
 }
 
@@ -45,8 +39,8 @@ std::shared_ptr<RecInput> ClipCore::Process(const std::shared_ptr<DetBox> &in) {
       out->boxes.emplace_back(bb);
 
 #ifdef SAVE_CLIPS
-      std::string save_path =
-          save_dir_ + in->names[i] + "_" + std::to_string(j) + ".jpg";
+      fs::path save_path =
+          save_dir_ / (in->names[i] + "_" + std::to_string(j) + ".jpg");
       cv::imwrite(save_path, clip);
 
       ofs_det_info_ << in->names[i] << "_" << j << ".jpg " << bb.size.width

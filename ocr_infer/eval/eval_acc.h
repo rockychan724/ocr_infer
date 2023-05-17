@@ -1,30 +1,23 @@
 #ifndef OCR_INFER_EVAL_EVAL_ACC_H_
 #define OCR_INFER_EVAL_EVAL_ACC_H_
 
+#include <filesystem>
 #include <fstream>
 #include <unordered_set>
 
 #include "glog/logging.h"
 #include "ocr_infer/engines/parallel_engine.h"
 #include "ocr_infer/util/image_util.h"
-#include "ocr_infer/util/syscall.h"
+
+namespace fs = std::filesystem;
 
 class EvalAcc : public ParallelEngine {
  protected:
   virtual void Consume() override {
-    // TODO: add check directory util.
-    auto check_dir = [](const std::string &dir) {
-      if (Access(dir.c_str(), 0) == 0) {
-        std::string cmd = "rm -r " + dir;
-        system(cmd.c_str());
-      }
-      CHECK(Mkdir(dir.c_str(), 0777) == 0)
-          << "Can't create directory " << dir << " !\n";
-    };
-    det_output_dir_ = output_dir_ + "det_output/";
-    rec_output_dir_ = output_dir_ + "rec_output/";
-    check_dir(det_output_dir_);
-    check_dir(rec_output_dir_);
+    det_output_dir_ = output_dir_ / "det_output";
+    rec_output_dir_ = output_dir_ / "rec_output";
+    CHECK(fs::create_directories(det_output_dir_));
+    CHECK(fs::create_directories(rec_output_dir_));
 
     while (!stop_consume_) {
       auto match_result = receiver_->pop();
@@ -37,8 +30,8 @@ class EvalAcc : public ParallelEngine {
                      bool execute_callback_func = false) override {
     for (int i = 0; i < match_result->names.size(); i++) {
       std::string name = match_result->names[i];
-      std::string det_output_path = det_output_dir_ + name + ".jpg";
-      std::string rec_output_path = rec_output_dir_ + name + ".txt";
+      fs::path det_output_path = det_output_dir_ / (name + ".jpg");
+      fs::path rec_output_path = rec_output_dir_ / (name + ".txt");
       std::stringstream ss;
       int boxnum = match_result->boxnum[i];
       std::cout << name << " has " << boxnum << " boxes:" << std::endl;
@@ -85,8 +78,8 @@ class EvalAcc : public ParallelEngine {
   }
 
  private:
-  std::string det_output_dir_;
-  std::string rec_output_dir_;
+  fs::path det_output_dir_;
+  fs::path rec_output_dir_;
 
   std::unordered_set<std::string> saved_file_;
 };

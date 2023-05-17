@@ -8,18 +8,12 @@ RecognizeCore::RecognizeCore(
     const std::unordered_map<std::string, std::string> &config) {
   LOG(INFO) << "Recognize node init...";
   recognizer_num_ = std::stoi(Inquire(config, "recognizer_num"));
-  int rec_batch_size = std::stoi(Inquire(config, "reco_batch_size"));
+  int rec_batch_size = std::stoi(Inquire(config, "rec_batch_size"));
   LOG(INFO) << "recognizer_num_ = " << recognizer_num_
             << ", rec_batch_size = " << rec_batch_size;
 
-  std::string root_path = Inquire(config, "root_path");
-  if (root_path.back() != '/') {
-    root_path += "/";
-  }
-  std::string recengine_zhenjpko = Inquire(config, "recengine_zhenjpko");
-  std::string dict_zhenjpko = Inquire(config, "dict_zhenjpko");
-  std::string model_path = root_path + recengine_zhenjpko;
-  std::string dict_path = root_path + dict_zhenjpko;
+  std::string model_path = Inquire(config, "rec_model");
+  std::string dict_path = Inquire(config, "dict");
 
   recognizer_.resize(recognizer_num_);
   for (int i = 0; i < recognizer_num_; i++) {
@@ -79,7 +73,7 @@ cv::Mat RecognizeCore::Preprocess(const cv::Mat &input_image) {
   if (input_image.channels() == 3) {
     cvtColor(input_image, im_to_use, cv::COLOR_BGR2GRAY);
   } else {
-    im_to_use = input_image.clone();
+    im_to_use = input_image.clone();  // TODO: 是否有必要复制一份
   }
   if (im_to_use.depth() != CV_32FC1) {
     im_to_use.convertTo(im_to_use, CV_32FC1);

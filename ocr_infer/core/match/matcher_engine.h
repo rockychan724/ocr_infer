@@ -28,7 +28,7 @@ class MatcherEngine {
   std::unordered_map<std::wstring, int> keyword_to_wordid_;
   std::vector<int> invalid_rule_;
 
-  void ReadKeyword(const std::string &keyword_dir);
+  void ReadKeyword(std::string keyword_dir);
 
   std::vector<int> CombBack(std::vector<int> &hit_word_vector, int m, int r);
 };

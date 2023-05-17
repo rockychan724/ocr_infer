@@ -1,22 +1,27 @@
 #ifndef OCR_INFER_UTIL_INIT_H_
 #define OCR_INFER_UTIL_INIT_H_
 
-#include "glog/logging.h"
-#include "ocr_infer/util/syscall.h"
+#include <filesystem>
+#include <unordered_map>
 
-static int InitLog(const char *program) {
+#include "glog/logging.h"
+
+namespace fs = std::filesystem;
+
+static int InitDirectory(const char *program, const fs::path &output_dir) {
+#ifdef WRITE_LOG_TO_FILE
   google::InitGoogleLogging(program);
   std::string log_dir = "log";
   FLAGS_log_dir = log_dir;
-
-  if (Access(log_dir.c_str(), 0) == -1) {
-    if (Mkdir(log_dir.c_str(), 0775) == -1) {
-      std::stringstream ss;
-      ss << "mkdir: can't mkdir named \"" << log_dir << "\"";
-      perror(ss.str().c_str());
-      return -1;
-    }
+  if (!fs::exists(log_dir)) {
+    CHECK(fs::create_directories(log_dir)) << "Can't mkdir " << log_dir;
   }
+#endif
+
+  if (fs::exists(output_dir)) {
+    CHECK(fs::remove_all(output_dir)) << "Can't delete " << output_dir;
+  }
+  CHECK(fs::create_directories(output_dir));
 
   return 0;
 }
