@@ -73,6 +73,7 @@ std::shared_ptr<RecOutput> RecognizeCore::Process(
   return out;
 }
 
+// TODO: 可以放到 clip 节点中
 cv::Mat RecognizeCore::Preprocess(const cv::Mat &input_image) {
   cv::Mat im_to_use;
   if (input_image.channels() == 3) {
