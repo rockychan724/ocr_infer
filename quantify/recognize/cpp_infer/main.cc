@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <filesystem>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -10,6 +11,8 @@
 #include "crnn.h"
 #include "glog/logging.h"
 #include "opencv2/opencv.hpp"
+
+namespace fs = std::filesystem;
 
 class Timer {
  public:
@@ -77,8 +80,11 @@ int main(int argc, char **argv) {
   // FLAGS_log_dir = log_dir;
   // system("mkdir -p log");
 
-  system("rm -r ./inference_output");
-  system("mkdir -p ./inference_output");
+  fs::path output_dir = "./inference_output";
+  if (fs::exists(output_dir)) {
+    CHECK(fs::remove_all(output_dir)) << "Can't delete " << output_dir;
+  }
+  CHECK(fs::create_directories(output_dir)) << "Can't create " << output_dir;
 
   std::string fname = "../../weights/trt_engine/3090/crnn_100.fp16";
   std::string dict_path = "../../../data/rec_dict/dict_cjke.txt";

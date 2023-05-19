@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -14,6 +15,8 @@
 #include "drawer.h"
 #include "glog/logging.h"
 #include "opencv2/opencv.hpp"
+
+namespace fs = std::filesystem;
 
 class Timer {
  public:
@@ -86,10 +89,14 @@ int main(int argc, char **argv) {
   // FLAGS_log_dir = log_dir;
   // system("mkdir -p log");
 
-  system("rm -r ./inference_output");
-  system(
-      "mkdir -p ./inference_output/vis ./inference_output/preds "
-      "./inference_output/probs");
+  fs::path output_dir = "./inference_output";
+  if (fs::exists(output_dir)) {
+    CHECK(fs::remove_all(output_dir)) << "Can't delete " << output_dir;
+  }
+  CHECK(fs::create_directories(output_dir)) << "Can't create " << output_dir;
+  CHECK(fs::create_directories(output_dir / "vis"));
+  CHECK(fs::create_directories(output_dir / "preds"));
+  CHECK(fs::create_directories(output_dir / "probs"));
 
   std::string model_path = "../../weights/trt_engine/3090/db_resnet_50.fp16";
   int batch_size = 50;

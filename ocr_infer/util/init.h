@@ -21,7 +21,7 @@ static int InitDirectory(const char *program, const fs::path &output_dir) {
   if (fs::exists(output_dir)) {
     CHECK(fs::remove_all(output_dir)) << "Can't delete " << output_dir;
   }
-  CHECK(fs::create_directories(output_dir));
+  CHECK(fs::create_directories(output_dir)) << "Can't create " << output_dir;
 
   return 0;
 }
