@@ -69,7 +69,7 @@ def do_infer():
 
     pp = SegDetectorRepresenter(opt)
 
-    img_paths = glob("../testdata/image/*.jpg")
+    img_paths = glob("../../../testdata/e2e/image/*.jpg")
     batch_size = opt["batch_size"]
     batch_num = math.ceil(len(img_paths) / batch_size)
     total_inference_time = 0
@@ -173,8 +173,7 @@ if __name__ == "__main__":
         os.makedirs(os.path.join(opt["output_dir"], "probs"), exist_ok=True)
 
     opt["device"] = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # opt["model_path"] = "data/weights/final_1020.pth"
-    opt["model_path"] = "../../data/torch_weight/db_resnet.pth"
+    opt["model_path"] = "../../weights/torch_weight/db_resnet.pth"
     print(f"****** use {opt['model_path']}")
 
     with torch.no_grad():

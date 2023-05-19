@@ -11,7 +11,7 @@ class Drawer {
  public:
   void Draw(cv::Mat images, std::vector<cv::RotatedRect> boxes,
             std::string file_core_name, bool save_det_result = true) {
-    std::string dpath = "../inference_output/vis/" + file_core_name + ".jpg";
+    std::string dpath = "./inference_output/vis/" + file_core_name + ".jpg";
     cv::Mat dim = images.clone();
     std::stringstream ss;
     for (auto rr : boxes) {
@@ -26,7 +26,7 @@ class Drawer {
     }
     cv::imwrite(dpath, dim);
     if (save_det_result) {
-      std::string txt = "../inference_output/preds/" + file_core_name + ".txt";
+      std::string txt = "./inference_output/preds/" + file_core_name + ".txt";
       std::ofstream ofs(txt.c_str());
       ofs << ss.str();
       ofs.close();

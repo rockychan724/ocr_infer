@@ -177,7 +177,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model_path",
         type=str,
-        default="../../data/torch_weight/crnn.pth",
+        default="../../weights/torch_weight/crnn.pth",
         help="the path quantized model",
     )
     parser.add_argument("--batch_size", type=int, default=100, help="batch size")
@@ -197,19 +197,19 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dict_file",
         type=str,
-        default="../testdata/dict_cjke.txt",
+        default="../../../data/rec_dict/dict_cjke.txt",
         help="the path to testset",
     )
     parser.add_argument(
         "--testset_dir",
         type=str,
-        default="../testdata/sub_mixed_test",
+        default="../../../testdata/rec/sub_mixed_test",
         help="the path to testset",
     )
     parser.add_argument(
         "--testset_gt",
         type=str,
-        default="../testdata/sub_mixed_test.txt",
+        default="../../../testdata/rec/sub_mixed_test.txt",
         help="the path to testset gt",
     )
     parser.add_argument(

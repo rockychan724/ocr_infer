@@ -133,6 +133,7 @@ def eval_detect(gt_dir, pred_dir):
         2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
     )
     char_acc = total_char_acc / total_gt_num
+    print(f'Totally, \nDetect "precision": {precision}, "recall": {recall}, "f1": {f1}')
     # print(f'End-to-End Recognize "char_acc": {char_acc}')  # not correct
 
 
@@ -152,7 +153,7 @@ if __name__ == "__main__":
         gt_dir_ = sys.argv[1]
         preds_dir_ = sys.argv[2]
     else:
-        gt_dir_ = "../testdata/gt"
+        gt_dir_ = "../../../testdata/e2e/gt"
         preds_dir_ = "inference_output/preds"
     print(gt_dir_, preds_dir_)
     eval_detect(gt_dir_, preds_dir_)

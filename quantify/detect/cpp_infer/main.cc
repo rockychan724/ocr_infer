@@ -41,7 +41,7 @@ void ReadImages(std::vector<std::string> &file_names,
                 std::vector<cv::Mat> &images,
                 std::vector<cv::Point2f> &scales) {
   std::vector<cv::String> files;
-  cv::glob("../../testdata/image/*.jpg", files, false);
+  cv::glob("../../../testdata/e2e/image/*.jpg", files, false);
   size_t num = files.size();
   for (size_t i = 0; i < num; i++) {
     cv::Mat origin_img = cv::imread(files[i], cv::IMREAD_COLOR);
@@ -69,7 +69,7 @@ void ReadImages(std::vector<std::string> &file_names,
 
 void mat_to_txt(const cv::Mat &mat, const std::string &img_name, int j) {
   std::stringstream ss;
-  ss << "../inference_output/probs/" << img_name << "_" << j << ".txt";
+  ss << "./inference_output/probs/" << img_name << "_" << j << ".txt";
   std::ofstream f(ss.str());
   for (int i = 0; i < mat.rows; i++) {
     for (int j = 0; j < mat.cols; j++) {
@@ -81,17 +81,17 @@ void mat_to_txt(const cv::Mat &mat, const std::string &img_name, int j) {
 }
 
 int main(int argc, char **argv) {
-  google::InitGoogleLogging(argv[0]);
-  std::string log_dir = "log";
-  FLAGS_log_dir = log_dir;
-  system("mkdir -p log");
+  // google::InitGoogleLogging(argv[0]);
+  // std::string log_dir = "log";
+  // FLAGS_log_dir = log_dir;
+  // system("mkdir -p log");
 
-  system("rm -r ../inference_output");
+  system("rm -r ./inference_output");
   system(
-      "mkdir -p ../inference_output/vis ../inference_output/preds "
-      "../inference_output/probs");
+      "mkdir -p ./inference_output/vis ./inference_output/preds "
+      "./inference_output/probs");
 
-  std::string model_path = "../../../data/trt_engine/3090/db_resnet_50.fp16";
+  std::string model_path = "../../weights/trt_engine/3090/db_resnet_50.fp16";
   int batch_size = 50;
 
   Db detector(model_path, batch_size);

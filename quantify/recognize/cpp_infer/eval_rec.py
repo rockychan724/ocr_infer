@@ -31,7 +31,7 @@ if __name__ == "__main__":
         gt_file = sys.argv[1]
         pred_file = sys.argv[2]
     else:
-        gt_file = "../testdata/sub_mixed_test.txt"
+        gt_file = "../../../testdata/rec/sub_mixed_test.txt"
         pred_file = "inference_output/rec_result.txt"
     gt_list = []
     pred_list = []

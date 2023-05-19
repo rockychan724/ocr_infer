@@ -35,7 +35,7 @@ class Timer {
 void ReadImages(std::vector<std::string> &file_names,
                 std::vector<cv::Mat> &images) {
   std::vector<cv::String> files;
-  cv::glob("../../testdata/sub_mixed_test/*.jpg", files, false);
+  cv::glob("../../../testdata/rec/sub_mixed_test/*.jpg", files, false);
   size_t num = files.size();
   cv::Size img_size(480, 48);
   for (size_t i = 0; i < num; i++) {
@@ -72,16 +72,16 @@ void ReadImages(std::vector<std::string> &file_names,
 }
 
 int main(int argc, char **argv) {
-  google::InitGoogleLogging(argv[0]);
-  std::string log_dir = "log";
-  FLAGS_log_dir = log_dir;
-  system("mkdir -p log");
+  // google::InitGoogleLogging(argv[0]);
+  // std::string log_dir = "log";
+  // FLAGS_log_dir = log_dir;
+  // system("mkdir -p log");
 
-  system("rm -r ../inference_output");
-  system("mkdir -p ../inference_output");
+  system("rm -r ./inference_output");
+  system("mkdir -p ./inference_output");
 
-  std::string fname = "../../../data/trt_engine/3090/crnn_100.fp16";
-  std::string dict_path = "../../testdata/dict_cjke.txt";
+  std::string fname = "../../weights/trt_engine/3090/crnn_100.fp16";
+  std::string dict_path = "../../../data/rec_dict/dict_cjke.txt";
   int batch_size = 100;
   Crnn crnn(fname, dict_path, batch_size);
 
@@ -89,9 +89,9 @@ int main(int argc, char **argv) {
   std::vector<cv::Mat> images;
   ReadImages(file_names, images);
 
-  std::ofstream ofs("../inference_output/rec_result.txt");
+  std::ofstream ofs("./inference_output/rec_result.txt");
   if (!ofs.is_open()) {
-    std::cout << "Can't open ../inference_output/rec_output.txt" << std::endl;
+    std::cout << "Can't open ./inference_output/rec_output.txt" << std::endl;
   }
   int batch_num = ceil(float(images.size()) / batch_size);
   size_t begin_index = 0;

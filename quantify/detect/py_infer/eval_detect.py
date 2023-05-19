@@ -153,7 +153,7 @@ if __name__ == "__main__":
         gt_dir_ = sys.argv[1]
         preds_dir_ = sys.argv[2]
     else:
-        gt_dir_ = "../testdata/gt"
+        gt_dir_ = "../../../testdata/e2e/gt"
         preds_dir_ = "inference_output/preds"
     print(gt_dir_, preds_dir_)
     eval_detect(gt_dir_, preds_dir_)

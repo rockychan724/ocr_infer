@@ -9,8 +9,8 @@ from DB_model_resnet import BasicModel_for_trt
 
 
 def save_onnx():
-    src_pth = "../../data/torch_weight/db_mobilenet.pth"
-    dst_onnx = "../../data/onnx/db_mobilenet.onnx"
+    src_pth = "../../weights/torch_weight/db_mobilenet.pth"
+    dst_onnx = "../../weights/onnx/db_mobilenet.onnx"
     model = BasicModel_for_trt().cuda()
     state = torch.load(src_pth)
     new_state = OrderedDict()

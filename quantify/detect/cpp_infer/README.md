@@ -3,7 +3,7 @@ cmake -S . -B build
 cmake --build build
 
 # run
-cd build && ./detect_infer
+./build/detect_infer
 
 # eval
-cd .. && python3 eval_detect.py 
+python3 eval_detect.py 

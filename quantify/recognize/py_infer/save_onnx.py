@@ -4,11 +4,11 @@ import yaml
 from crnn import CRNN_OCR_for_cnc_trt
 
 if __name__ == "__main__":
-    src_pth = "../../data/torch_weight/crnn.pth"
-    dst_onnx = "../../data/onnx/crnn.onnx"
+    src_pth = "../../weights/torch_weight/crnn.pth"
+    dst_onnx = "../../weights/onnx/crnn.onnx"
     config = {
         "model_path": src_pth,
-        "dict_path": "../testdata/dict_cjke.txt",
+        "dict_path": "../../../data/rec_dict/dict_cjke.txt",
         "batch_size": 32,
         "input_channel": 1,
         "class_number": 10910,
