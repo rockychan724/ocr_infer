@@ -1,5 +1,6 @@
 #include "ocr_infer/core/node_core/detect_core.h"
 
+#include <filesystem>
 #include <thread>
 
 #include "glog/logging.h"
@@ -15,6 +16,8 @@ DetectCore::DetectCore(
             << ", det_batch_size = " << det_batch_size;
 
   std::string model_path = Inquire(config, "detect_model");
+  CHECK(std::filesystem::exists(model_path))
+      << "Can't find detect model " << model_path;
 
   detector_.resize(detector_num_);
   for (int i = 0; i < detector_num_; i++) {

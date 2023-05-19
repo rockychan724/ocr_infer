@@ -8,7 +8,7 @@
 TEST(TestEvalParallelAcc, test_eval_parallel_acc) {
   EvalParallelAcc eval_parallel_acc;
   std::string config_file =
-      "/home/chenlei/Documents/cnc/ocr_infer/data/config_cnc.ini";
+      "/home/chenlei/Documents/cnc/ocr_infer/data/config.ini";
   std::string image_dir = "/home/chenlei/Documents/cnc/testdata/image/";
 
   ASSERT_EQ(eval_parallel_acc.Init(config_file, nullptr, nullptr), 0);

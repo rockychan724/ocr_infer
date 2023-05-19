@@ -9,7 +9,7 @@
 TEST(TestParallelEngine, test_parallel_engine) {
   ParallelEngine parallel_engine;
   std::string config_file =
-      "/home/chenlei/Documents/cnc/ocr_infer/data/config_cnc.ini";
+      "/home/chenlei/Documents/cnc/ocr_infer/data/config.ini";
   std::string image_dir = "/home/chenlei/Documents/cnc/testdata/image/";
 
   auto callback_func = [](const std::string &out, const cv::Mat det_res,

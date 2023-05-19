@@ -1,5 +1,6 @@
 #include "ocr_infer/core/node_core/recognize_core.h"
 
+#include <filesystem>
 #include <thread>
 
 #include "glog/logging.h"
@@ -14,6 +15,10 @@ RecognizeCore::RecognizeCore(
 
   std::string model_path = Inquire(config, "rec_model");
   std::string dict_path = Inquire(config, "dict");
+  CHECK(std::filesystem::exists(model_path))
+      << "Can't find recognition model " << model_path;
+  CHECK(std::filesystem::exists(dict_path))
+      << "Can't find dict file " << dict_path;
 
   recognizer_.resize(recognizer_num_);
   for (int i = 0; i < recognizer_num_; i++) {

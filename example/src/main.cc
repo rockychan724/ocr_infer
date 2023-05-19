@@ -8,7 +8,7 @@ void Show(const std::string &res, void *other) {
 
 int main() {
   std::string config_file =
-      "/home/chenlei/Documents/cnc/ocr_infer/data/config_cnc.ini";
+      "/home/chenlei/Documents/cnc/ocr_infer/data/config.ini";
   std::string image_dir = "/home/chenlei/Documents/cnc/testdata/image/";
   OcrInfer of;
   of.Init(config_file, Show, nullptr);
