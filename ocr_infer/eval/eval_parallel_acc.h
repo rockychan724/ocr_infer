@@ -1,5 +1,5 @@
-#ifndef OCR_INFER_EVAL_EVAL_ACC_H_
-#define OCR_INFER_EVAL_EVAL_ACC_H_
+#ifndef OCR_INFER_EVAL_EVAL_PARALLEL_ACC_H_
+#define OCR_INFER_EVAL_EVAL_PARALLEL_ACC_H_
 
 #include <filesystem>
 #include <fstream>
@@ -11,7 +11,7 @@
 
 namespace fs = std::filesystem;
 
-class EvalAcc : public ParallelEngine {
+class EvalParallelAcc : public ParallelEngine {
  protected:
   virtual void Consume() override {
     det_output_dir_ = output_dir_ / "det_output";
@@ -84,4 +84,4 @@ class EvalAcc : public ParallelEngine {
   std::unordered_set<std::string> saved_file_;
 };
 
-#endif  // OCR_INFER_EVAL_EVAL_ACC_H_
+#endif  // OCR_INFER_EVAL_EVAL_PARALLEL_ACC_H_

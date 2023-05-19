@@ -1,5 +1,5 @@
-#ifndef OCR_INFER_CORE_PIPELINE_PIPELINE_H_
-#define OCR_INFER_CORE_PIPELINE_PIPELINE_H_
+#ifndef OCR_INFER_CORE_PARALLEL_PIPELINE_PIPELINE_H_
+#define OCR_INFER_CORE_PARALLEL_PIPELINE_PIPELINE_H_
 
 #include "ocr_infer/core/common/data_structure.h"
 #include "ocr_infer/core/common/transmission.h"
@@ -16,11 +16,11 @@ typedef std::pair<std::shared_ptr<QueueSender<RecInput>>,
     RecInOutPair;
 
 // parallel pipeline
-class PipelineFactory {
+class ParallelPipeline {
  public:
   static E2eInOutPair BuildE2e(const Config &config);
   static DetInOutPair BuildDet(const Config &config);
   static RecInOutPair BuildRec(const Config &config);
 };
 
-#endif  // OCR_INFER_CORE_PIPELINE_PIPELINE_H_
+#endif  // OCR_INFER_CORE_PARALLEL_PIPELINE_PIPELINE_H_

@@ -1,4 +1,4 @@
 add_library(pipeline OBJECT
-  pipeline.cc
+  parallel_pipeline.cc
   serial_pipeline.cc
 )

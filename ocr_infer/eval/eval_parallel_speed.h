@@ -1,9 +1,9 @@
-#ifndef OCR_INFER_EVAL_EVAL_SPEED_H_
-#define OCR_INFER_EVAL_EVAL_SPEED_H_
+#ifndef OCR_INFER_EVAL_EVAL_PARALLEL_SPEED_H_
+#define OCR_INFER_EVAL_EVAL_PARALLEL_SPEED_H_
 
 #include "ocr_infer/engines/parallel_engine.h"
 
-class EvalSpeed : public ParallelEngine {
+class EvalParallelSpeed : public ParallelEngine {
  protected:
   // dry run
   virtual void Consume() override {
@@ -13,4 +13,4 @@ class EvalSpeed : public ParallelEngine {
   }
 };
 
-#endif  // OCR_INFER_EVAL_EVAL_SPEED_H_
+#endif  // OCR_INFER_EVAL_EVAL_PARALLEL_SPEED_H_

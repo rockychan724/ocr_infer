@@ -1,4 +1,4 @@
-#include "ocr_infer/core/pipeline/pipeline.h"
+#include "ocr_infer/core/pipeline/parallel_pipeline.h"
 
 #include "ocr_infer/core/node_core/buffer_core.h"
 #include "ocr_infer/core/node_core/clip_core.h"
@@ -49,13 +49,13 @@ class PipelineE2e {
 };
 
 // 考虑垃圾回收
-E2eInOutPair PipelineFactory::BuildE2e(const Config &config) {
+E2eInOutPair ParallelPipeline::BuildE2e(const Config &config) {
   // std::shared_ptr<PipelineE2e> pipeline =
   // std::make_shared<PipelineE2e>(config);
   auto pipeline = new PipelineE2e(config);
   return std::make_pair(pipeline->e2e_sender_, pipeline->e2e_receiver_);
 }
 
-DetInOutPair PipelineFactory::BuildDet(const Config &config) { return {}; }
+DetInOutPair ParallelPipeline::BuildDet(const Config &config) { return {}; }
 
-RecInOutPair PipelineFactory::BuildRec(const Config &config) { return {}; }
+RecInOutPair ParallelPipeline::BuildRec(const Config &config) { return {}; }

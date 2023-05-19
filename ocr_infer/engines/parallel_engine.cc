@@ -1,7 +1,7 @@
 #include "ocr_infer/engines/parallel_engine.h"
 
 #include "glog/logging.h"
-#include "ocr_infer/core/pipeline/pipeline.h"
+#include "ocr_infer/core/pipeline/parallel_pipeline.h"
 #include "ocr_infer/util/config_util.h"
 #include "ocr_infer/util/image_util.h"
 #include "ocr_infer/util/init.h"
@@ -28,7 +28,7 @@ int ParallelEngine::Init(const std::string& config_file,
 
   InitDirectory("ocr_infer", output_dir_);
 
-  auto pipeline_io = PipelineFactory::BuildE2e(config);
+  auto pipeline_io = ParallelPipeline::BuildE2e(config);
   sender_ = pipeline_io.first;
   receiver_ = pipeline_io.second;
 

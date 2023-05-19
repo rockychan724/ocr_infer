@@ -16,8 +16,9 @@ int SerialEngine::Init(const std::string& config_file,
 
   callback_func_ = callback_func;
   other_ = other;
+  output_dir_ = Query(config, "output_dir");
 
-  InitDirectory("ocr_infer", Query(config, "output_dir"));
+  InitDirectory("ocr_infer", output_dir_);
 
   detect_batch_size_ = std::stoi(Query(config, "detect_batch_size"));
 
@@ -80,7 +81,6 @@ void SerialEngine::Print(const std::shared_ptr<MatchOutput>& match_result,
       cv::RotatedRect box = match_result->multiboxes[i][j];
       cv::Point2f vertices2f[4];
       box.points(vertices2f);
-      cv::Point root_points[1][4];
       for (int k = 0; k < 4; k++) {
         ss << int(vertices2f[k].x) << "," << int(vertices2f[k].y) << ",";
       }

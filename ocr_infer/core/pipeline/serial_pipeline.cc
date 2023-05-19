@@ -11,7 +11,7 @@ SerialE2ePipeline::SerialE2ePipeline(const Config &config) {
   gather_node_ = std::make_unique<GatherCore>(config);
   match_node_ = std::make_unique<MatchCore>(config);
 
-  rec_batch_size_ = std::stoi(Query(config, "reco_batch_size"));
+  rec_batch_size_ = std::stoi(Query(config, "rec_batch_size"));
 }
 
 std::shared_ptr<MatchOutput> SerialE2ePipeline::Run(
