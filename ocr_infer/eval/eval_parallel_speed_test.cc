@@ -9,9 +9,9 @@
 TEST(TestEvalParallelSpeed, test_eval_parallel_speed) {
   EvalParallelSpeed eval_parallel_speed;
   std::string config_file =
-      "/home/chenlei/Documents/cnc/ocr_infer/data/config.ini";
+      "/home/ocr_infer/data/config.ini";
   std::string image_dir =
-      "/home/chenlei/Documents/cnc/ocr_infer/testdata/e2e/image/";
+      "/home/ocr_infer/testdata/e2e/image/";
 
   ASSERT_EQ(eval_parallel_speed.Init(config_file, nullptr, nullptr), 0);
   LOG(INFO) << "Begin to test speed, please wait...";

@@ -1,6 +1,5 @@
 import torch
 import onnx
-import yaml
 from crnn import CRNN_OCR_for_cnc_trt
 
 if __name__ == "__main__":

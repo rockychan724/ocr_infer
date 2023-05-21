@@ -10,7 +10,6 @@ import time
 import cv2
 import numpy as np
 import torch
-from tqdm import tqdm
 
 # from DB_model_mobilenet import BasicModel
 
@@ -54,17 +53,18 @@ def demo_visualize(image_path, output):
 
 def do_infer():
     model = BasicModel()
-    torch_version = float(".".join(torch.__version__.split(".")[:2]))
-    if torch_version >= 1.6:
-        state = torch.load(opt["model_path"], map_location=opt["device"])
-        new_state = OrderedDict()
-        for k, v in state.items():
-            name = k[13:]
-            new_state[name] = v
-        model.load_state_dict(new_state)
-    else:
-        state = torch.load(opt["model_path"], map_location=opt["device"])
-        model.load_state_dict(state)
+
+    # if torch version >= 1.6
+    state = torch.load(opt["model_path"], map_location=opt["device"])
+    new_state = OrderedDict()
+    for k, v in state.items():
+        name = k[13:]
+        new_state[name] = v
+    model.load_state_dict(new_state)
+    # if torch versuib < 1.6
+    # state = torch.load(opt["model_path"], map_location=opt["device"])
+    # model.load_state_dict(state)
+
     model = model.to(opt["device"])
 
     pp = SegDetectorRepresenter(opt)

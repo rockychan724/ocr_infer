@@ -9,9 +9,9 @@
 TEST(TestSerialEngine, test_serial_engine) {
   SerialEngine serial_engine;
   std::string config_file =
-      "/home/chenlei/Documents/cnc/ocr_infer/data/config.ini";
+      "/home/ocr_infer/data/config.ini";
   std::string image_dir =
-      "/home/chenlei/Documents/cnc/ocr_infer/testdata/e2e/image/";
+      "/home/ocr_infer/testdata/e2e/image/";
 
   auto callback_func = [](const std::string &out, const cv::Mat &det_res,
                           void *other) { std::cout << out << std::endl; };

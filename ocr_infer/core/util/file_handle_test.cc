@@ -6,7 +6,7 @@
 
 TEST(TestFileHandle, test_get_files) {
   std::string dir_path =
-      "/home/chenlei/Documents/cnc/ocr_infer/data/keyword_files";
+      "/home/ocr_infer/data/keyword_files";
   auto res1 = GetFilesV1(dir_path, "txt", false, true);
   auto res2 = GetFilesV2(dir_path, "txt");
   ASSERT_EQ(res1.size(), res2.size());
@@ -18,7 +18,7 @@ TEST(TestFileHandle, test_get_files) {
 
 TEST(TestFileHandle, test_read_unicode_file) {
   std::string dir_path =
-      "/home/chenlei/Documents/cnc/ocr_infer/data/keyword_files";
+      "/home/ocr_infer/data/keyword_files";
   auto file_path = GetFilesV1(dir_path, "txt", false, true);
   std::vector<std::vector<std::wstring>> res;
   for (size_t i = 0; i < file_path.size(); i++) {

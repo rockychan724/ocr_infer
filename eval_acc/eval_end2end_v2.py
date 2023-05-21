@@ -227,4 +227,4 @@ if __name__ == "__main__":
     else:
         gt_folder = "../testdata/e2e/gt/"
         pred_folder = "../output/rec_output/"
-    e2e_eval(gt_folder, pred_folder, True)
+    e2e_eval(gt_folder, pred_folder)

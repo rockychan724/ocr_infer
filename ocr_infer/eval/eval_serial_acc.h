@@ -92,7 +92,7 @@ class EvalSerialAcc : public SerialEngine {
 
         // draw detect box
         if (draw_detect_box) {
-          cv::imwrite(det_output_path, img);
+          cv::imwrite(det_output_path.c_str(), img);
         }
       }
 

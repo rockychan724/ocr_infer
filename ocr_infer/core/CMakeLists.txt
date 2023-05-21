@@ -18,4 +18,6 @@ target_link_libraries(core
   -lnvinfer -lnvinfer_plugin -lcudart
   -ltbb
   -lglog
+  -lpthread
+  -lstdc++fs  # for g++-8
 )

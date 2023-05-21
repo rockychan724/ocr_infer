@@ -26,4 +26,5 @@ target_link_libraries(rec_infer
     -lopencv_imgcodecs
     -lopencv_imgproc
     -lglog
+    -lstdc++fs  # for g++-8
 )

@@ -6,11 +6,8 @@ import cv2
 import numpy as np
 import torch
 from edit_distance import edit_distance
-from tqdm import tqdm
 
 from crnn import CRNN_OCR_for_cnc_trt
-
-import os
 
 
 class InferenceWrapper:
