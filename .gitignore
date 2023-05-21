@@ -43,6 +43,7 @@ output/
 weights/
 inference_output*
 nvinfer
+acc/
 *.tar
 *.tar.gz
 *.tgz

@@ -6,4 +6,4 @@ cmake --build build
 ./build/detect_infer
 
 # eval
-python3 eval_detect.py 
+python3 ../py_infer/eval_detect.py ../../../testdata/e2e/gt inference_output/preds
