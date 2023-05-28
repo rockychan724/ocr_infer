@@ -35,6 +35,7 @@ docker pull ruyueshi/ocr_infer:v1-cuda11.1.1-cudnn8-tensorrt7
 
 4. 编译：
 ```shell
+git clone https://github.com/ruyueshi/ocr_infer.git
 cd ocr_infer
 cmake -S . -B build
 cmake --build build -j8  # 默认会构建所有目标
