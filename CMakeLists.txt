@@ -23,6 +23,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(
     ${PROJECT_SOURCE_DIR}
+    /usr/include/opencv4
     /usr/local/include
     /usr/local/cuda/include
 )

@@ -19,5 +19,4 @@ target_link_libraries(core
   -ltbb
   -lglog
   -lpthread
-  -lstdc++fs  # for g++-8
 )

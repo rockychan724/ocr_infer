@@ -28,5 +28,4 @@ target_link_libraries(
     -lopencv_imgcodecs
     -lopencv_imgproc
     -lglog
-    -lstdc++fs  # for g++-8
 )
