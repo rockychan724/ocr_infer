@@ -30,7 +30,7 @@ docker build -t my_ocr_infer:v1 .
 
 - 直接拉去已经配置好的开发环境
 ```shell
-docker pull ruyueshi/ocr_infer:v1-cuda11.1.1-cudnn8-tensorrt7
+docker pull ruyueshi/ocr_infer:v1-ubuntu20-cuda11.1.1-cudnn8-tensorrt7
 ```
 
 4. 编译：
